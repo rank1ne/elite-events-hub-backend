@@ -55,6 +55,15 @@ app.get('/health', (req, res) => {
   });
 });
 
+// Root route
+app.get('/', (req, res) => {
+  res.json({ 
+    message: 'Elite Events Hub API is running!',
+    status: 'ok',
+    version: '1.0.0'
+  });
+});
+
 // Scheduled scraper (runs daily at 6 AM)
 cron.schedule('0 6 * * *', () => {
   console.log('Running daily event scraper...');
