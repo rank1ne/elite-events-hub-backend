@@ -1,12 +1,13 @@
-// Elite Events Hub - Web App Controller
+// Elite Events Hub - Web App Controller (API Connected)
 // ==========================================
 const API_BASE = 'https://elite-events-hub-backend-production.up.railway.app/api';
 let currentUser = null;
 let currentView = 'feed';
 let currentCategory = 'all';
+let EVENTS = []; // Dynamic - loaded from backend
 
-// ===== MOCK EVENTS DATA =====
-const EVENTS = [
+// ===== FALLBACK EVENTS (if API fails) =====
+const FALLBACK_EVENTS = [
   {
     id: '1',
     title: "Christie's Important Watches",
@@ -154,7 +155,7 @@ function resetButton(btn) {
   btn.disabled = false;
 }
 
-// ===== WEB STORAGE (Replaces chrome.storage) =====
+// ===== WEB STORAGE =====
 const webStorage = {
   async get(keys) {
     const result = {};
@@ -181,9 +182,55 @@ const webStorage = {
 // ===== INIT =====
 document.addEventListener('DOMContentLoaded', async () => {
   await loadUserState();
+  await loadEvents(); // Load events from API
   setupEventListeners();
   setupNotifications();
 });
+
+// ===== LOAD EVENTS FROM BACKEND =====
+async function loadEvents() {
+  try {
+    const res = await fetch(`${API_BASE}/events`);
+    const data = await res.json();
+
+    if (data.success && data.events && data.events.length > 0) {
+      // Convert backend events to frontend format
+      EVENTS = data.events.map((e, index) => ({
+        id: e._id || String(index + 1),
+        title: e.title,
+        date: e.startDate ? formatDate(e.startDate) : 'TBD',
+        location: e.location ? `${e.location.city}${e.location.country ? ', ' + e.location.country : ''}` : 'Global',
+        price: e.priceRange || 'Contact for pricing',
+        category: e.category || 'auctions',
+        tags: e.tags || ['Luxury'],
+        ticketUrl: e.ticketUrl || e.officialUrl || '#'
+      }));
+      console.log(`Loaded ${EVENTS.length} events from API`);
+    } else {
+      // Use fallback if API returns empty
+      EVENTS = [...FALLBACK_EVENTS];
+      console.log('Using fallback events');
+    }
+  } catch (err) {
+    console.error('Failed to load events:', err);
+    EVENTS = [...FALLBACK_EVENTS];
+    showToast('Using offline events - connect to internet for updates');
+  }
+
+  // Render feed if we're on feed view
+  if (currentView === 'feed') {
+    renderFeed();
+  }
+}
+
+function formatDate(dateString) {
+  try {
+    const date = new Date(dateString);
+    return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+  } catch (e) {
+    return dateString;
+  }
+}
 
 // ===== AUTH & USER STATE =====
 async function loadUserState() {
@@ -201,7 +248,6 @@ async function loadUserState() {
           await webStorage.set({ user: currentUser });
           updateTierBadge();
           showMainApp();
-          renderFeed();
           return;
         } else {
           await webStorage.remove(['token', 'user']);
@@ -433,6 +479,19 @@ function renderFeed() {
   const main = document.getElementById('main-content');
   if (!main) return;
 
+  // Show loading if events not loaded yet
+  if (EVENTS.length === 0) {
+    main.innerHTML = `
+      <div class="view-section" style="text-align:center;padding:60px 20px;">
+        <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="var(--gold)" stroke-width="2" style="animation:spin 1s linear infinite;margin-bottom:16px;">
+          <circle cx="12" cy="12" r="10" stroke-dasharray="60" stroke-dashoffset="20"/>
+        </svg>
+        <div style="color:var(--text-muted);font-size:14px;">Loading exclusive events...</div>
+      </div>
+    `;
+    return;
+  }
+
   const userTier = currentUser ? currentUser.tier : 'free';
   const filtered = currentCategory === 'all'
     ? EVENTS
@@ -546,13 +605,23 @@ function attachButtonListeners() {
 function renderCalendar() {
   const main = document.getElementById('main-content');
   if (!main) return;
-  const eventDays = [5, 12, 14, 23, 26, 28, 29];
+
+  // Extract event days from actual events
+  const eventDays = EVENTS.map(e => {
+    try {
+      const d = new Date(e.date);
+      return d.getDate();
+    } catch (err) { return null; }
+  }).filter(d => d && d >= 1 && d <= 31);
+
+  // Fallback if no valid dates
+  const displayDays = eventDays.length > 0 ? eventDays : [5, 12, 14, 23, 26, 28, 29];
 
   let html = `
     <div class="view-section">
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
         <span style="color:var(--text-primary);font-size:16px;font-weight:500;">August 2026</span>
-        <span style="color:var(--text-muted);font-size:12px;">7 events</span>
+        <span style="color:var(--text-muted);font-size:12px;">${EVENTS.length} events</span>
       </div>
       <div style="display:grid;grid-template-columns:repeat(7,1fr);gap:4px;margin-bottom:4px;">
         ${['M','T','W','T','F','S','S'].map(d => `<span style="text-align:center;font-size:11px;color:var(--text-muted);font-weight:500;">${d}</span>`).join('')}
@@ -561,29 +630,24 @@ function renderCalendar() {
   `;
 
   for (let i = 1; i <= 31; i++) {
-    const hasEvent = eventDays.includes(i);
+    const hasEvent = displayDays.includes(i);
     html += `<div class="cal-day ${hasEvent ? 'has-event' : ''}" ${hasEvent ? `data-day="${i}"` : ''}>${i}</div>`;
   }
 
   html += `
       </div>
       <div style="margin-top:20px;padding-top:16px;border-top:1px solid var(--border);">
-        <div style="color:var(--text-secondary);font-size:13px;margin-bottom:12px;font-weight:500;">Upcoming this month</div>
+        <div style="color:var(--text-secondary);font-size:13px;margin-bottom:12px;font-weight:500;">Upcoming Events</div>
         <div style="display:flex;flex-direction:column;gap:8px;">
-          <div class="cal-event-item" data-event-id="1" style="display:flex;justify-content:space-between;align-items:center;padding:12px;background:var(--bg-card);border-radius:var(--radius-sm);border:1px solid var(--border);cursor:pointer;">
-            <div>
-              <span style="color:var(--text-primary);font-size:13px;display:block;">Sotheby's Important Watches</span>
-              <span style="color:var(--text-muted);font-size:11px;">New York - Est. $800K+</span>
+          ${EVENTS.slice(0, 3).map(event => `
+            <div class="cal-event-item" data-event-id="${event.id}" style="display:flex;justify-content:space-between;align-items:center;padding:12px;background:var(--bg-card);border-radius:var(--radius-sm);border:1px solid var(--border);cursor:pointer;">
+              <div>
+                <span style="color:var(--text-primary);font-size:13px;display:block;">${event.title}</span>
+                <span style="color:var(--text-muted);font-size:11px;">${event.location} - ${event.price}</span>
+              </div>
+              <span style="color:var(--gold);font-size:12px;font-weight:500;">${event.date}</span>
             </div>
-            <span style="color:var(--gold);font-size:12px;font-weight:500;">Aug 12</span>
-          </div>
-          <div class="cal-event-item" data-event-id="6" style="display:flex;justify-content:space-between;align-items:center;padding:12px;background:var(--bg-card);border-radius:var(--radius-sm);border:1px solid var(--border);cursor:pointer;">
-            <div>
-              <span style="color:var(--text-primary);font-size:13px;display:block;">RM Sotheby's Monterey</span>
-              <span style="color:var(--text-muted);font-size:11px;">California - Est. $5M+</span>
-            </div>
-            <span style="color:var(--gold);font-size:12px;font-weight:500;">Aug 14</span>
-          </div>
+          `).join('')}
         </div>
       </div>
     </div>
@@ -969,7 +1033,6 @@ function setReminder(eventId) {
   const event = EVENTS.find(e => e.id === eventId);
   if (!event) return;
 
-  // Web: Use setTimeout instead of chrome.alarms
   setTimeout(() => {
     if ('Notification' in window && Notification.permission === 'granted') {
       new Notification('Elite Events Hub', {
@@ -981,7 +1044,6 @@ function setReminder(eventId) {
     }
   }, 5000);
 
-  // Store reminder in localStorage
   try {
     const reminders = JSON.parse(localStorage.getItem('reminders') || '[]');
     reminders.push({ eventId, date: event.date, title: event.title });
@@ -992,7 +1054,6 @@ function setReminder(eventId) {
 }
 
 function setupNotifications() {
-  // Web: Request notification permission
   if ('Notification' in window && Notification.permission === 'default') {
     Notification.requestPermission();
   }
