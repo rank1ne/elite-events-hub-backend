@@ -60,20 +60,20 @@ app.use(cors({
 // Static files serve karo (frontend)
 app.use(express.static(path.join(__dirname, 'public')));
 
-// ===== API ROUTES (yeh pehle se honge) =====
+// ===== API ROUTES
 app.use('/api/auth', require('./routes/auth'));
 // ... baaki routes
-
-// ===== SPA FALLBACK (sabse last mein add karo) =====
-app.get('*', (req, res) => {
-  res.sendFile(path.join(__dirname, 'public', 'index.html'));
-});
 
 // Routes
 app.use('/api/auth', require('./routes/auth'));
 app.use('/api/events', require('./routes/events'));
 app.use('/api/payments', require('./routes/payments'));
 app.use('/api/notifications', require('./routes/notifications'));
+
+// SPA fallback
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'index.html'));
+});
 
 // Health check
 app.get('/health', (req, res) => {
