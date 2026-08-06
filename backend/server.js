@@ -48,6 +48,27 @@ mongoose.connect(process.env.MONGODB_URI)
     process.exit(1);
   });
 
+const cors = require('cors');
+const path = require('path');
+
+// CORS enable karo
+app.use(cors({
+  origin: true,
+  credentials: true
+}));
+
+// Static files serve karo (frontend)
+app.use(express.static(path.join(__dirname, 'public')));
+
+// ===== API ROUTES (yeh pehle se honge) =====
+app.use('/api/auth', require('./routes/auth'));
+// ... baaki routes
+
+// ===== SPA FALLBACK (sabse last mein add karo) =====
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'index.html'));
+});
+
 // Routes
 app.use('/api/auth', require('./routes/auth'));
 app.use('/api/events', require('./routes/events'));
