@@ -36,9 +36,17 @@ app.use('/api/payments/', paymentLimiter);
 app.use(express.json({ limit: '10mb' }));
 
 // Database connection
-mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/eliteeventshub')
+if (!process.env.MONGODB_URI) {
+  console.error('ERROR: MONGODB_URI environment variable is not set');
+  process.exit(1);
+}
+
+mongoose.connect(process.env.MONGODB_URI)
   .then(() => console.log('Connected to MongoDB'))
-  .catch(err => console.error('MongoDB connection error:', err));
+  .catch(err => {
+    console.error('MongoDB connection error:', err);
+    process.exit(1);
+  });
 
 // Routes
 app.use('/api/auth', require('./routes/auth'));
