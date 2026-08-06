@@ -758,7 +758,7 @@ function renderSubscribe() {
       </button>
 
       <div style="text-align:center;margin-bottom:20px;">
-        <img src="assets/logo.png" style="width:48px;height:48px;border-radius:10px;margin-bottom:10px;border:1px solid rgba(201,162,39,0.3);" alt="EEH">
+        <img src="logo.png" style="width:48px;height:48px;..." alt="EEH">
         <div style="color:var(--text-primary);font-size:18px;font-weight:600;margin-bottom:4px;">Go Premium</div>
         <div style="color:var(--text-muted);font-size:12px;">Unlock exclusive events, VIP alerts, and direct booking links</div>
       </div>
