@@ -1,4 +1,4 @@
-/* Elite Events Hub - Web App Styles */
+/* Elite Events Hub - Web App Styles (Responsive) */
 :root {
   --bg-primary: #0a0a0a;
   --bg-secondary: #111111;
@@ -117,15 +117,22 @@ body {
   transform: none !important;
 }
 
-/* Main App */
+/* Main App - FULL WIDTH on desktop */
 #main-app {
-  max-width: 600px;
-  margin: 0 auto;
+  width: 100%;
   min-height: 100vh;
   display: flex;
   flex-direction: column;
   position: relative;
   padding-bottom: 80px;
+}
+
+/* Content wrapper for desktop centering */
+.content-wrapper {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 20px;
 }
 
 .header {
@@ -234,6 +241,9 @@ main {
 
 .view-section {
   animation: fadeIn 0.3s ease;
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
 }
 
 @keyframes fadeIn {
@@ -241,13 +251,18 @@ main {
   to { opacity: 1; transform: translateY(0); }
 }
 
-/* Event Cards */
+/* Event Cards Grid */
+.events-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 16px;
+}
+
 .event-card {
   background: var(--bg-card);
   border: 1px solid var(--border);
   border-radius: var(--radius-md);
   padding: 16px;
-  margin-bottom: 12px;
   cursor: pointer;
   transition: all 0.2s;
 }
@@ -424,7 +439,7 @@ main {
 /* Pricing */
 .price-row {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
   gap: 12px;
   margin-top: 20px;
 }
@@ -479,16 +494,16 @@ main {
   color: var(--text-primary);
 }
 
-/* Bottom Nav */
+/* Bottom Nav - FULL WIDTH */
 .bottom-nav {
   position: fixed;
   bottom: 0;
-  left: 50%;
-  transform: translateX(-50%);
+  left: 0;
+  right: 0;
   width: 100%;
-  max-width: 600px;
   display: flex;
-  justify-content: space-around;
+  justify-content: center;
+  gap: 60px;
   padding: 10px 0;
   background: rgba(10,10,10,0.95);
   backdrop-filter: blur(10px);
@@ -506,7 +521,7 @@ main {
   color: var(--text-muted);
   font-size: 11px;
   cursor: pointer;
-  padding: 4px 16px;
+  padding: 4px 24px;
   transition: all 0.2s;
 }
 
@@ -548,9 +563,43 @@ main {
   to { transform: rotate(360deg); }
 }
 
-/* Responsive */
+/* Responsive - Mobile ke liye */
+@media (max-width: 768px) {
+  .events-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .price-row {
+    grid-template-columns: 1fr;
+  }
+
+  .upgrade-banner {
+    flex-direction: column;
+    gap: 12px;
+    text-align: center;
+  }
+
+  .bottom-nav {
+    gap: 20px;
+  }
+
+  .nav-item {
+    padding: 4px 16px;
+  }
+}
+
 @media (max-width: 480px) {
   .auth-title { font-size: 24px; }
-  .price-row { grid-template-columns: 1fr; }
-  .upgrade-banner { flex-direction: column; gap: 12px; text-align: center; }
+
+  .header {
+    padding: 12px 16px;
+  }
+
+  .logo-text h1 {
+    font-size: 14px;
+  }
+
+  main {
+    padding: 12px 16px;
+  }
 }
