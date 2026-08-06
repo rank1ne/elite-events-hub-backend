@@ -6,14 +6,18 @@ const helmet = require('helmet');
 const compression = require('compression');
 const rateLimit = require('express-rate-limit');
 const cron = require('node-cron');
+const path = require('path');
 
 const app = express();
+
+// Trust proxy (Railway ke behind proxy ke liye zaroori)
+app.set('trust proxy', 1);
 
 // Security middleware
 app.use(helmet());
 app.use(compression());
 app.use(cors({
-  origin: process.env.EXTENSION_ORIGIN || '*',
+  origin: true,
   credentials: true
 }));
 
@@ -48,32 +52,14 @@ mongoose.connect(process.env.MONGODB_URI)
     process.exit(1);
   });
 
-const cors = require('cors');
-const path = require('path');
-
-// CORS enable karo
-app.use(cors({
-  origin: true,
-  credentials: true
-}));
-
-// Static files serve karo (frontend)
+// ===== STATIC FILES (Frontend Web App) - API se PEHLE =====
 app.use(express.static(path.join(__dirname, 'public')));
 
-// ===== API ROUTES
-app.use('/api/auth', require('./routes/auth'));
-// ... baaki routes
-
-// Routes
+// ===== API ROUTES =====
 app.use('/api/auth', require('./routes/auth'));
 app.use('/api/events', require('./routes/events'));
 app.use('/api/payments', require('./routes/payments'));
 app.use('/api/notifications', require('./routes/notifications'));
-
-// SPA fallback
-app.get('*', (req, res) => {
-  res.sendFile(path.join(__dirname, 'public', 'index.html'));
-});
 
 // Health check
 app.get('/health', (req, res) => {
@@ -84,19 +70,15 @@ app.get('/health', (req, res) => {
   });
 });
 
-// Root route
-app.get('/', (req, res) => {
-  res.json({ 
-    message: 'Elite Events Hub API is running!',
-    status: 'ok',
-    version: '1.0.0'
-  });
-});
-
 // Scheduled scraper (runs daily at 6 AM)
 cron.schedule('0 6 * * *', () => {
   console.log('Running daily event scraper...');
   require('./services/auctionScraper').runScraper();
+});
+
+// ===== SPA FALLBACK - API ke BAAD, Error se PEHLE =====
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
 // Error handling
