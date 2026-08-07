@@ -1,6 +1,6 @@
 // Elite Events Hub - Web App Controller (API Connected)
 // ==========================================
-const API_BASE = 'https://elite-events-hub-backend-production.up.railway.app/api';
+// Backend API temporarily bypassed - all data loaded locally
 let currentUser = null;
 let currentView = 'feed';
 let currentCategory = 'all';
@@ -524,35 +524,11 @@ document.addEventListener('DOMContentLoaded', async () => {
   setupNotifications();
 });
 
-// ===== LOAD EVENTS FROM BACKEND =====
+// ===== LOAD EVENTS (Backend bypassed - using local data) =====
 async function loadEvents() {
-  try {
-    const res = await fetch(`${API_BASE}/events`);
-    const data = await res.json();
-
-    if (data.success && data.events && data.events.length > 0) {
-      // Convert backend events to frontend format
-      EVENTS = data.events.map((e, index) => ({
-        id: e._id || String(index + 1),
-        title: e.title,
-        date: e.startDate ? formatDate(e.startDate) : 'TBD',
-        location: e.location ? `${e.location.city}${e.location.country ? ', ' + e.location.country : ''}` : 'Global',
-        price: e.priceRange || 'Contact for pricing',
-        category: e.category || 'auctions',
-        tags: e.tags || ['Luxury'],
-        ticketUrl: e.ticketUrl || e.officialUrl || '#'
-      }));
-      console.log(`Loaded ${EVENTS.length} events from API`);
-    } else {
-      // Use fallback if API returns empty
-      EVENTS = [...FALLBACK_EVENTS];
-      console.log('Using fallback events');
-    }
-  } catch (err) {
-    console.error('Failed to load events:', err);
-    EVENTS = [...FALLBACK_EVENTS];
-    showToast('Using offline events - connect to internet for updates');
-  }
+  // Backend is currently down/suspended - load all 45+ events directly from fallback
+  EVENTS = [...FALLBACK_EVENTS];
+  console.log(`Loaded ${EVENTS.length} events from local data`);
 
   // Render feed if we're on feed view
   if (currentView === 'feed') {
@@ -560,38 +536,16 @@ async function loadEvents() {
   }
 }
 
-function formatDate(dateString) {
-  try {
-    const date = new Date(dateString);
-    return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
-  } catch (e) {
-    return dateString;
-  }
-}
-
-// ===== AUTH & USER STATE =====
+// ===== AUTH & USER STATE (Local only - no backend) =====
 async function loadUserState() {
   try {
     const result = await webStorage.get(['user', 'token', 'preferences']);
 
-    if (result.token) {
-      try {
-        const res = await fetch(`${API_BASE}/auth/me`, {
-          headers: { 'Authorization': 'Bearer ' + result.token }
-        });
-        if (res.ok) {
-          const data = await res.json();
-          currentUser = data.user;
-          await webStorage.set({ user: currentUser });
-          updateTierBadge();
-          showMainApp();
-          return;
-        } else {
-          await webStorage.remove(['token', 'user']);
-        }
-      } catch (e) {
-        await webStorage.remove(['token', 'user']);
-      }
+    if (result.user) {
+      currentUser = result.user;
+      updateTierBadge();
+      showMainApp();
+      return;
     }
 
     currentUser = null;
@@ -641,7 +595,7 @@ async function handleLogout() {
   showToast('Logged out successfully');
 }
 
-// ===== LOGIN =====
+// ===== LOGIN (Local only) =====
 async function handleLogin() {
   const emailInput = document.getElementById('auth-email');
   const passwordInput = document.getElementById('auth-password');
@@ -662,34 +616,27 @@ async function handleLogin() {
 
   setButtonLoading(btn, 'Signing in...');
 
-  try {
-    const res = await fetch(`${API_BASE}/auth/login`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email, password })
-    });
-
-    const data = await res.json();
-    if (data.success) {
-      await webStorage.set({ user: data.user, token: data.token });
-      currentUser = data.user;
-      showMainApp();
-      updateTierBadge();
-      renderFeed();
-      showToast('Welcome back!');
-      if (emailInput) emailInput.value = '';
-      if (passwordInput) passwordInput.value = '';
-    } else {
-      showToast(data.error || 'Login failed');
-    }
-  } catch (err) {
-    showToast('Network error. Please try again.');
-  } finally {
+  // Simulate login locally (no backend)
+  setTimeout(async () => {
+    currentUser = { 
+      id: 'local_' + Date.now(), 
+      name: email.split('@')[0], 
+      email: email, 
+      tier: 'free',
+      preferences: { auctions: true, sports: true, yachts: true }
+    };
+    await webStorage.set({ user: currentUser, token: 'local_token' });
+    showMainApp();
+    updateTierBadge();
+    renderFeed();
+    showToast('Welcome back!');
+    if (emailInput) emailInput.value = '';
+    if (passwordInput) passwordInput.value = '';
     resetButton(btn);
-  }
+  }, 800);
 }
 
-// ===== REGISTER =====
+// ===== REGISTER (Local only) =====
 async function handleRegister() {
   const nameInput = document.getElementById('reg-name');
   const emailInput = document.getElementById('reg-email');
@@ -717,32 +664,25 @@ async function handleRegister() {
 
   setButtonLoading(btn, 'Creating account...');
 
-  try {
-    const res = await fetch(`${API_BASE}/auth/register`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email, password, name })
-    });
-
-    const data = await res.json();
-    if (data.success) {
-      await webStorage.set({ user: data.user, token: data.token });
-      currentUser = data.user;
-      showMainApp();
-      updateTierBadge();
-      renderFeed();
-      showToast('Account created successfully!');
-      if (nameInput) nameInput.value = '';
-      if (emailInput) emailInput.value = '';
-      if (passwordInput) passwordInput.value = '';
-    } else {
-      showToast(data.error || 'Registration failed');
-    }
-  } catch (err) {
-    showToast('Network error. Please try again.');
-  } finally {
+  // Simulate registration locally (no backend)
+  setTimeout(async () => {
+    currentUser = { 
+      id: 'local_' + Date.now(), 
+      name: name, 
+      email: email, 
+      tier: 'free',
+      preferences: { auctions: true, sports: true, yachts: true }
+    };
+    await webStorage.set({ user: currentUser, token: 'local_token' });
+    showMainApp();
+    updateTierBadge();
+    renderFeed();
+    showToast('Account created successfully!');
+    if (nameInput) nameInput.value = '';
+    if (emailInput) emailInput.value = '';
+    if (passwordInput) passwordInput.value = '';
     resetButton(btn);
-  }
+  }, 800);
 }
 
 // ===== EVENT LISTENERS =====
