@@ -8,6 +8,7 @@ let EVENTS = []; // Dynamic - loaded from backend
 
 // ===== FALLBACK EVENTS (if API fails) =====
 const FALLBACK_EVENTS = [
+  // ===== EXISTING EVENTS =====
   {
     id: '1',
     title: "Christie's Important Watches",
@@ -80,7 +81,7 @@ const FALLBACK_EVENTS = [
   },
   {
     id: '8',
-    title: "Sotheby's Contemporary Evening",
+    title: "Sotheby's Contemporary Evening HK",
     date: 'Sep 29, 2026',
     location: 'Hong Kong',
     price: 'Est. $10M+',
@@ -127,6 +128,342 @@ const FALLBACK_EVENTS = [
     category: 'yachts',
     tags: ['Superyachts', 'Asia'],
     ticketUrl: '#'
+  },
+
+  // ===== NEW AUCTIONS & COLLECTIBLES =====
+  {
+    id: '13',
+    title: "Bonhams Bond Street Jewels",
+    date: 'Mar 15, 2027',
+    location: 'London',
+    price: 'Est. £800K+',
+    category: 'auctions',
+    tags: ['Jewelry', 'Bonhams'],
+    ticketUrl: 'https://bonhams.com'
+  },
+  {
+    id: '14',
+    title: "Bonhams Quail Lodge Auction",
+    date: 'Aug 14, 2026',
+    location: 'Carmel Valley, CA',
+    price: 'Est. $12M+',
+    category: 'auctions',
+    tags: ['Cars', 'Bonhams'],
+    ticketUrl: 'https://bonhams.com/quail-lodge'
+  },
+  {
+    id: '15',
+    title: "Phillips New York Watch Auction XI",
+    date: 'Jun 7, 2026',
+    location: 'New York',
+    price: 'Est. $3M+',
+    category: 'auctions',
+    tags: ['Watches', 'Phillips'],
+    ticketUrl: 'https://phillips.com'
+  },
+  {
+    id: '16',
+    title: "Phillips Geneva Watch Auction XVIII",
+    date: 'Nov 8, 2026',
+    location: 'Geneva',
+    price: 'Est. CHF 8M+',
+    category: 'auctions',
+    tags: ['Watches', 'Phillips'],
+    ticketUrl: 'https://phillips.com'
+  },
+  {
+    id: '17',
+    title: "Heritage Luxury Accessories",
+    date: 'Sep 12, 2026',
+    location: 'Dallas',
+    price: 'Est. $1.5M+',
+    category: 'auctions',
+    tags: ['Bags', 'Hermès'],
+    ticketUrl: 'https://heritageauctions.com'
+  },
+  {
+    id: '18',
+    title: "Heritage Fine Art & Antiques",
+    date: 'May 22, 2026',
+    location: 'New York',
+    price: 'Est. $4M+',
+    category: 'auctions',
+    tags: ['Art', 'Antiques'],
+    ticketUrl: 'https://heritageauctions.com'
+  },
+  {
+    id: '19',
+    title: 'Art Basel Hong Kong',
+    date: 'Mar 25, 2027',
+    location: 'Hong Kong',
+    price: '$75-$500',
+    category: 'auctions',
+    tags: ['Art', 'Contemporary'],
+    ticketUrl: 'https://artbasel.com/hong-kong'
+  },
+  {
+    id: '20',
+    title: 'Art Basel Basel',
+    date: 'Jun 18, 2026',
+    location: 'Basel',
+    price: '$75-$500',
+    category: 'auctions',
+    tags: ['Art', 'Contemporary'],
+    ticketUrl: 'https://artbasel.com/basel'
+  },
+  {
+    id: '21',
+    title: 'TEFAF Maastricht',
+    date: 'Mar 12, 2027',
+    location: 'Maastricht',
+    price: 'EUR 50+',
+    category: 'auctions',
+    tags: ['Art', 'Fine Art'],
+    ticketUrl: 'https://tefaf.com'
+  },
+  {
+    id: '22',
+    title: 'TEFAF New York',
+    date: 'May 6, 2026',
+    location: 'New York',
+    price: '$50+',
+    category: 'auctions',
+    tags: ['Art', 'Fine Art'],
+    ticketUrl: 'https://tefaf.com'
+  },
+  {
+    id: '23',
+    title: 'Concours d'Elegance Pebble Beach',
+    date: 'Aug 16, 2026',
+    location: 'Pebble Beach, CA',
+    price: '$750+',
+    category: 'auctions',
+    tags: ['Cars', 'Classic'],
+    ticketUrl: 'https://pebblebeachconcours.net'
+  },
+  {
+    id: '24',
+    title: 'Met Gala 2027',
+    date: 'May 3, 2027',
+    location: 'New York',
+    price: '$35K+',
+    category: 'auctions',
+    tags: ['Fashion', 'Charity'],
+    ticketUrl: '#'
+  },
+  {
+    id: '25',
+    title: 'Venice Biennale 2026',
+    date: 'Apr 18 - Nov 22, 2026',
+    location: 'Venice',
+    price: 'EUR 25+',
+    category: 'auctions',
+    tags: ['Art', 'Contemporary'],
+    ticketUrl: 'https://labiennale.org'
+  },
+  {
+    id: '26',
+    title: 'Art Basel Paris',
+    date: 'Oct 16, 2026',
+    location: 'Paris',
+    price: '$75-$500',
+    category: 'auctions',
+    tags: ['Art', 'Contemporary'],
+    ticketUrl: 'https://artbasel.com/paris'
+  },
+  {
+    id: '27',
+    title: "Christie's Magnificent Jewels",
+    date: 'Dec 8, 2026',
+    location: 'New York',
+    price: 'Est. $8M+',
+    category: 'auctions',
+    tags: ['Jewelry', 'Diamonds'],
+    ticketUrl: 'https://christies.com'
+  },
+  {
+    id: '28',
+    title: "Sotheby's Contemporary Evening NY",
+    date: 'Nov 18, 2026',
+    location: 'New York',
+    price: 'Est. $20M+',
+    category: 'auctions',
+    tags: ['Art', 'Contemporary'],
+    ticketUrl: 'https://sothebys.com'
+  },
+
+  // ===== NEW SPORTS =====
+  {
+    id: '29',
+    title: 'F1 Singapore Grand Prix',
+    date: 'Oct 4, 2026',
+    location: 'Singapore',
+    price: 'S$1,500+',
+    category: 'sports',
+    tags: ['F1', 'Night Race'],
+    ticketUrl: 'https://singaporegp.sg'
+  },
+  {
+    id: '30',
+    title: 'F1 Abu Dhabi Grand Prix',
+    date: 'Dec 6, 2026',
+    location: 'Yas Marina',
+    price: 'AED 2,500+',
+    category: 'sports',
+    tags: ['F1', 'Season Finale'],
+    ticketUrl: 'https://yasmarinacircuit.com'
+  },
+  {
+    id: '31',
+    title: 'F1 British Grand Prix',
+    date: 'Jul 5, 2026',
+    location: 'Silverstone',
+    price: 'GBP 350+',
+    category: 'sports',
+    tags: ['F1', 'Historic'],
+    ticketUrl: 'https://silverstone.co.uk'
+  },
+  {
+    id: '32',
+    title: 'US Open Tennis Championships',
+    date: 'Aug 31 - Sep 13, 2026',
+    location: 'New York',
+    price: '$600+',
+    category: 'sports',
+    tags: ['Tennis', 'Grand Slam'],
+    ticketUrl: 'https://usopen.org'
+  },
+  {
+    id: '33',
+    title: 'Australian Open',
+    date: 'Jan 18 - Jan 31, 2027',
+    location: 'Melbourne',
+    price: 'AUD 500+',
+    category: 'sports',
+    tags: ['Tennis', 'Grand Slam'],
+    ticketUrl: 'https://ausopen.com'
+  },
+  {
+    id: '34',
+    title: 'The Masters Tournament',
+    date: 'Apr 5, 2027',
+    location: 'Augusta, GA',
+    price: '$3,000+',
+    category: 'sports',
+    tags: ['Golf', 'Major'],
+    ticketUrl: 'https://masters.com'
+  },
+  {
+    id: '35',
+    title: 'The Open Championship',
+    date: 'Jul 12, 2026',
+    location: 'St Andrews',
+    price: 'GBP 250+',
+    category: 'sports',
+    tags: ['Golf', 'Major'],
+    ticketUrl: 'https://theopen.com'
+  },
+  {
+    id: '36',
+    title: 'Winter Olympics 2026',
+    date: 'Feb 6-22, 2026',
+    location: 'Milan-Cortina',
+    price: 'EUR 150+',
+    category: 'sports',
+    tags: ['Winter Olympics', 'Italy'],
+    ticketUrl: 'https://milanocortina2026.org'
+  },
+  {
+    id: '37',
+    title: 'FIFA World Cup 2026',
+    date: 'Jun 11 - Jul 19, 2026',
+    location: 'USA/Canada/Mexico',
+    price: '$600+',
+    category: 'sports',
+    tags: ['Football', 'World Cup'],
+    ticketUrl: 'https://fifa.com/worldcup'
+  },
+  {
+    id: '38',
+    title: 'Canelo vs Bivol II',
+    date: 'Sep 19, 2026',
+    location: 'Las Vegas',
+    price: '$1,200+',
+    category: 'sports',
+    tags: ['Boxing', 'Title Fight'],
+    ticketUrl: '#'
+  },
+  {
+    id: '39',
+    title: 'Kentucky Derby',
+    date: 'May 2, 2027',
+    location: 'Louisville, KY',
+    price: '$2,000+',
+    category: 'sports',
+    tags: ['Horse Racing', 'VIP'],
+    ticketUrl: 'https://kentuckyderby.com'
+  },
+  {
+    id: '40',
+    title: 'Royal Ascot',
+    date: 'Jun 16, 2027',
+    location: 'Ascot',
+    price: 'GBP 500+',
+    category: 'sports',
+    tags: ['Horse Racing', 'Royal'],
+    ticketUrl: 'https://ascot.co.uk'
+  },
+  {
+    id: '41',
+    title: 'Monaco Historic Grand Prix',
+    date: 'May 10, 2027',
+    location: 'Monaco',
+    price: 'EUR 500+',
+    category: 'sports',
+    tags: ['Motorsport', 'Historic'],
+    ticketUrl: 'https://acm.mc'
+  },
+
+  // ===== NEW YACHTS =====
+  {
+    id: '42',
+    title: 'Dubai International Boat Show',
+    date: 'Mar 10, 2027',
+    location: 'Dubai',
+    price: 'AED 150+',
+    category: 'yachts',
+    tags: ['Superyachts', 'Middle East'],
+    ticketUrl: 'https://dubaiboatshow.com'
+  },
+  {
+    id: '43',
+    title: 'Fort Lauderdale Boat Show',
+    date: 'Oct 28, 2026',
+    location: 'Fort Lauderdale',
+    price: '$150+',
+    category: 'yachts',
+    tags: ['Superyachts', 'Americas'],
+    ticketUrl: 'https://flibs.com'
+  },
+  {
+    id: '44',
+    title: 'Cannes Yachting Festival',
+    date: 'Sep 8, 2026',
+    location: 'Cannes',
+    price: 'EUR 75+',
+    category: 'yachts',
+    tags: ['Superyachts', 'Mediterranean'],
+    ticketUrl: 'https://cannesyachtingfestival.com'
+  },
+  {
+    id: '45',
+    title: 'Superyacht Miami',
+    date: 'Feb 12, 2027',
+    location: 'Miami',
+    price: '$250+',
+    category: 'yachts',
+    tags: ['Superyachts', 'Americas'],
+    ticketUrl: 'https://superyachtmiami.com'
   }
 ];
 
@@ -711,7 +1048,7 @@ function renderSettings() {
         <div style="color:var(--text-muted);font-size:12px;line-height:1.4;">
           ${userTier === 'premium'
             ? 'You have unlimited access to all events and VIP alerts.'
-            : 'Limited to 5 events per category. Upgrade for full access to all 12+ events.'}
+            : 'Limited to 5 events per category. Upgrade for full access to all 45+ events.'}
         </div>
         ${userTier === 'free' ? '<button class="upgrade-btn" style="margin-top:10px;" id="btn-settings-upgrade">Upgrade to Premium</button>' : ''}
       </div>
@@ -758,7 +1095,7 @@ function renderSubscribe() {
       </button>
 
       <div style="text-align:center;margin-bottom:20px;">
-        <img src="assets/logo.png" style="width:48px;height:48px;..." alt="EEH">
+        <img src="assets/logo.png" style="width:48px;height:48px;border-radius:10px;margin-bottom:10px;border:1px solid rgba(201,162,39,0.3);" alt="EEH">
         <div style="color:var(--text-primary);font-size:18px;font-weight:600;margin-bottom:4px;">Go Premium</div>
         <div style="color:var(--text-muted);font-size:12px;">Unlock exclusive events, VIP alerts, and direct booking links</div>
       </div>
