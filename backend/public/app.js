@@ -4,64 +4,521 @@
 
 let currentView = 'feed';
 let currentCategory = 'all';
+let currentUser = null;
 
-// ===== 45 LUXURY EVENTS (Same as Extension) =====
+// ===== HARDCODED 45 EVENTS =====
 const EVENTS = [
-  { id: "1", title: "Christie's Important Watches", date: "Jun 12, 2026", location: "New York", price: "Est. $800K-$1.6M", category: "auctions", tags: ["Watches", "Patek Philippe"], ticketUrl: "https://christies.com/en/auction/important-watches-26076" },
-  { id: "2", title: "Sotheby's High Jewelry", date: "Sep 17, 2026", location: "Hong Kong", price: "Est. $2M+", category: "auctions", tags: ["Jewelry", "Cartier"], ticketUrl: "https://sothebys.com/en/auctions/high-jewelry" },
-  { id: "3", title: "Monaco Grand Prix 2026", date: "Jun 5-7, 2026", location: "Monte Carlo", price: "EUR 4,000+", category: "sports", tags: ["F1", "Yacht Viewing"], ticketUrl: "https://monaco-grandprix.com" },
-  { id: "4", title: "Wimbledon Championships", date: "Jun 29 - Jul 12, 2026", location: "London", price: "GBP 3,395pp", category: "sports", tags: ["Tennis", "Debenture"], ticketUrl: "https://eventsinternational.co.uk/wimbledon" },
-  { id: "5", title: "Monaco Yacht Show 2026", date: "Sep 23-26, 2026", location: "Port Hercule", price: "EUR 400-EUR 2,070", category: "yachts", tags: ["Superyachts", "VIP"], ticketUrl: "https://monacoyachtshow.com" },
-  { id: "6", title: "RM Sotheby's Monterey", date: "Aug 14, 2026", location: "California", price: "Est. $5M+", category: "auctions", tags: ["Cars", "Ferrari"], ticketUrl: "https://rmsothebys.com" },
-  { id: "7", title: "Polo Gold Cup", date: "Jul 18-24, 2026", location: "St. Moritz", price: "CHF 2,500+", category: "sports", tags: ["Polo", "Snow"], ticketUrl: "#" },
-  { id: "8", title: "Sotheby's Contemporary Evening HK", date: "Sep 29, 2026", location: "Hong Kong", price: "Est. $10M+", category: "auctions", tags: ["Art", "Contemporary"], ticketUrl: "https://sothebys.com" },
-  { id: "9", title: "Art Basel Miami Beach", date: "Dec 3-6, 2026", location: "Miami", price: "$75-$500", category: "auctions", tags: ["Art", "Contemporary"], ticketUrl: "https://artbasel.com" },
-  { id: "10", title: "Dubai World Cup", date: "Mar 28, 2027", location: "Dubai", price: "AED 2,500+", category: "sports", tags: ["Horse Racing", "VIP"], ticketUrl: "#" },
-  { id: "11", title: "Cannes Film Festival", date: "May 12-23, 2027", location: "Cannes", price: "EUR 3,000+", category: "sports", tags: ["Film", "VIP"], ticketUrl: "#" },
-  { id: "12", title: "Singapore Yacht Show", date: "Apr 23-26, 2027", location: "Singapore", price: "S$500+", category: "yachts", tags: ["Superyachts", "Asia"], ticketUrl: "#" },
-  { id: "13", title: "Bonhams Bond Street Jewels", date: "Mar 15, 2027", location: "London", price: "Est. £800K+", category: "auctions", tags: ["Jewelry", "Bonhams"], ticketUrl: "https://bonhams.com" },
-  { id: "14", title: "Bonhams Quail Lodge Auction", date: "Aug 14, 2026", location: "Carmel Valley, CA", price: "Est. $12M+", category: "auctions", tags: ["Cars", "Bonhams"], ticketUrl: "https://bonhams.com/quail-lodge" },
-  { id: "15", title: "Phillips New York Watch Auction XI", date: "Jun 7, 2026", location: "New York", price: "Est. $3M+", category: "auctions", tags: ["Watches", "Phillips"], ticketUrl: "https://phillips.com" },
-  { id: "16", title: "Phillips Geneva Watch Auction XVIII", date: "Nov 8, 2026", location: "Geneva", price: "Est. CHF 8M+", category: "auctions", tags: ["Watches", "Phillips"], ticketUrl: "https://phillips.com" },
-  { id: "17", title: "Heritage Luxury Accessories", date: "Sep 12, 2026", location: "Dallas", price: "Est. $1.5M+", category: "auctions", tags: ["Bags", "Hermès"], ticketUrl: "https://heritageauctions.com" },
-  { id: "18", title: "Heritage Fine Art & Antiques", date: "May 22, 2026", location: "New York", price: "Est. $4M+", category: "auctions", tags: ["Art", "Antiques"], ticketUrl: "https://heritageauctions.com" },
-  { id: "19", title: "Art Basel Hong Kong", date: "Mar 25, 2027", location: "Hong Kong", price: "$75-$500", category: "auctions", tags: ["Art", "Contemporary"], ticketUrl: "https://artbasel.com/hong-kong" },
-  { id: "20", title: "Art Basel Basel", date: "Jun 18, 2026", location: "Basel", price: "$75-$500", category: "auctions", tags: ["Art", "Contemporary"], ticketUrl: "https://artbasel.com/basel" },
-  { id: "21", title: "TEFAF Maastricht", date: "Mar 12, 2027", location: "Maastricht", price: "EUR 50+", category: "auctions", tags: ["Art", "Fine Art"], ticketUrl: "https://tefaf.com" },
-  { id: "22", title: "TEFAF New York", date: "May 6, 2026", location: "New York", price: "$50+", category: "auctions", tags: ["Art", "Fine Art"], ticketUrl: "https://tefaf.com" },
-  { id: "23", title: "Concours d'Elegance Pebble Beach", date: "Aug 16, 2026", location: "Pebble Beach, CA", price: "$750+", category: "auctions", tags: ["Cars", "Classic"], ticketUrl: "https://pebblebeachconcours.net" },
-  { id: "24", title: "Met Gala 2027", date: "May 3, 2027", location: "New York", price: "$35K+", category: "auctions", tags: ["Fashion", "Charity"], ticketUrl: "#" },
-  { id: "25", title: "Venice Biennale 2026", date: "Apr 18 - Nov 22, 2026", location: "Venice", price: "EUR 25+", category: "auctions", tags: ["Art", "Contemporary"], ticketUrl: "https://labiennale.org" },
-  { id: "26", title: "Art Basel Paris", date: "Oct 16, 2026", location: "Paris", price: "$75-$500", category: "auctions", tags: ["Art", "Contemporary"], ticketUrl: "https://artbasel.com/paris" },
-  { id: "27", title: "Christie's Magnificent Jewels", date: "Dec 8, 2026", location: "New York", price: "Est. $8M+", category: "auctions", tags: ["Jewelry", "Diamonds"], ticketUrl: "https://christies.com" },
-  { id: "28", title: "Sotheby's Contemporary Evening NY", date: "Nov 18, 2026", location: "New York", price: "Est. $20M+", category: "auctions", tags: ["Art", "Contemporary"], ticketUrl: "https://sothebys.com" },
-  { id: "29", title: "F1 Singapore Grand Prix", date: "Oct 4, 2026", location: "Singapore", price: "S$1,500+", category: "sports", tags: ["F1", "Night Race"], ticketUrl: "https://singaporegp.sg" },
-  { id: "30", title: "F1 Abu Dhabi Grand Prix", date: "Dec 6, 2026", location: "Yas Marina", price: "AED 2,500+", category: "sports", tags: ["F1", "Season Finale"], ticketUrl: "https://yasmarinacircuit.com" },
-  { id: "31", title: "F1 British Grand Prix", date: "Jul 5, 2026", location: "Silverstone", price: "GBP 350+", category: "sports", tags: ["F1", "Historic"], ticketUrl: "https://silverstone.co.uk" },
-  { id: "32", title: "US Open Tennis Championships", date: "Aug 31 - Sep 13, 2026", location: "New York", price: "$600+", category: "sports", tags: ["Tennis", "Grand Slam"], ticketUrl: "https://usopen.org" },
-  { id: "33", title: "Australian Open", date: "Jan 18 - Jan 31, 2027", location: "Melbourne", price: "AUD 500+", category: "sports", tags: ["Tennis", "Grand Slam"], ticketUrl: "https://ausopen.com" },
-  { id: "34", title: "The Masters Tournament", date: "Apr 5, 2027", location: "Augusta, GA", price: "$3,000+", category: "sports", tags: ["Golf", "Major"], ticketUrl: "https://masters.com" },
-  { id: "35", title: "The Open Championship", date: "Jul 12, 2026", location: "St Andrews", price: "GBP 250+", category: "sports", tags: ["Golf", "Major"], ticketUrl: "https://theopen.com" },
-  { id: "36", title: "Winter Olympics 2026", date: "Feb 6-22, 2026", location: "Milan-Cortina", price: "EUR 150+", category: "sports", tags: ["Winter Olympics", "Italy"], ticketUrl: "https://milanocortina2026.org" },
-  { id: "37", title: "FIFA World Cup 2026", date: "Jun 11 - Jul 19, 2026", location: "USA/Canada/Mexico", price: "$600+", category: "sports", tags: ["Football", "World Cup"], ticketUrl: "https://fifa.com/worldcup" },
-  { id: "38", title: "Canelo vs Bivol II", date: "Sep 19, 2026", location: "Las Vegas", price: "$1,200+", category: "sports", tags: ["Boxing", "Title Fight"], ticketUrl: "#" },
-  { id: "39", title: "Kentucky Derby", date: "May 2, 2027", location: "Louisville, KY", price: "$2,000+", category: "sports", tags: ["Horse Racing", "VIP"], ticketUrl: "https://kentuckyderby.com" },
-  { id: "40", title: "Royal Ascot", date: "Jun 16, 2027", location: "Ascot", price: "GBP 500+", category: "sports", tags: ["Horse Racing", "Royal"], ticketUrl: "https://ascot.co.uk" },
-  { id: "41", title: "Monaco Historic Grand Prix", date: "May 10, 2027", location: "Monaco", price: "EUR 500+", category: "sports", tags: ["Motorsport", "Historic"], ticketUrl: "https://acm.mc" },
-  { id: "42", title: "Dubai International Boat Show", date: "Mar 10, 2027", location: "Dubai", price: "AED 150+", category: "yachts", tags: ["Superyachts", "Middle East"], ticketUrl: "https://dubaiboatshow.com" },
-  { id: "43", title: "Fort Lauderdale Boat Show", date: "Oct 28, 2026", location: "Fort Lauderdale", price: "$150+", category: "yachts", tags: ["Superyachts", "Americas"], ticketUrl: "https://flibs.com" },
-  { id: "44", title: "Cannes Yachting Festival", date: "Sep 8, 2026", location: "Cannes", price: "EUR 75+", category: "yachts", tags: ["Superyachts", "Mediterranean"], ticketUrl: "https://cannesyachtingfestival.com" },
-  { id: "45", title: "Superyacht Miami", date: "Feb 12, 2027", location: "Miami", price: "$250+", category: "yachts", tags: ["Superyachts", "Americas"], ticketUrl: "https://superyachtmiami.com" }
+  {
+    id: '1',
+    title: "Christie's Important Watches",
+    date: 'Jun 12, 2026',
+    location: 'New York',
+    price: 'Est. $800K-$1.6M',
+    category: 'auctions',
+    tags: ['Watches', 'Patek Philippe'],
+    ticketUrl: 'https://christies.com/en/auction/important-watches-26076'
+  },
+  {
+    id: '2',
+    title: "Sotheby's High Jewelry",
+    date: 'Sep 17, 2026',
+    location: 'Hong Kong',
+    price: 'Est. $2M+',
+    category: 'auctions',
+    tags: ['Jewelry', 'Cartier'],
+    ticketUrl: 'https://sothebys.com/en/auctions/high-jewelry'
+  },
+  {
+    id: '3',
+    title: 'Monaco Grand Prix 2026',
+    date: 'Jun 5-7, 2026',
+    location: 'Monte Carlo',
+    price: 'EUR 4,000+',
+    category: 'sports',
+    tags: ['F1', 'Yacht Viewing'],
+    ticketUrl: 'https://monaco-grandprix.com'
+  },
+  {
+    id: '4',
+    title: 'Wimbledon Championships',
+    date: 'Jun 29 - Jul 12, 2026',
+    location: 'London',
+    price: 'GBP 3,395pp',
+    category: 'sports',
+    tags: ['Tennis', 'Debenture'],
+    ticketUrl: 'https://eventsinternational.co.uk/wimbledon'
+  },
+  {
+    id: '5',
+    title: 'Monaco Yacht Show 2026',
+    date: 'Sep 23-26, 2026',
+    location: 'Port Hercule',
+    price: 'EUR 400-EUR 2,070',
+    category: 'yachts',
+    tags: ['Superyachts', 'VIP'],
+    ticketUrl: 'https://monacoyachtshow.com'
+  },
+  {
+    id: '6',
+    title: "RM Sotheby's Monterey",
+    date: 'Aug 14, 2026',
+    location: 'California',
+    price: 'Est. $5M+',
+    category: 'auctions',
+    tags: ['Cars', 'Ferrari'],
+    ticketUrl: 'https://rmsothebys.com'
+  },
+  {
+    id: '7',
+    title: 'Polo Gold Cup',
+    date: 'Jul 18-24, 2026',
+    location: 'St. Moritz',
+    price: 'CHF 2,500+',
+    category: 'sports',
+    tags: ['Polo', 'Snow'],
+    ticketUrl: '#'
+  },
+  {
+    id: '8',
+    title: "Sotheby's Contemporary Evening",
+    date: 'Sep 29, 2026',
+    location: 'Hong Kong',
+    price: 'Est. $10M+',
+    category: 'auctions',
+    tags: ['Art', 'Contemporary'],
+    ticketUrl: 'https://sothebys.com'
+  },
+  {
+    id: '9',
+    title: 'Art Basel Miami Beach',
+    date: 'Dec 3-6, 2026',
+    location: 'Miami',
+    price: '$75-$500',
+    category: 'arts',
+    tags: ['Art', 'Contemporary'],
+    ticketUrl: 'https://artbasel.com'
+  },
+  {
+    id: '10',
+    title: 'Dubai World Cup',
+    date: 'Mar 28, 2027',
+    location: 'Dubai',
+    price: 'AED 2,500+',
+    category: 'sports',
+    tags: ['Horse Racing', 'VIP'],
+    ticketUrl: '#'
+  },
+  {
+    id: '11',
+    title: 'Cannes Film Festival',
+    date: 'May 12-23, 2027',
+    location: 'Cannes',
+    price: 'EUR 3,000+',
+    category: 'experiences',
+    tags: ['Film', 'VIP'],
+    ticketUrl: '#'
+  },
+  {
+    id: '12',
+    title: 'Singapore Yacht Show',
+    date: 'Apr 23-26, 2027',
+    location: 'Singapore',
+    price: 'S$500+',
+    category: 'yachts',
+    tags: ['Superyachts', 'Asia'],
+    ticketUrl: '#'
+  },
+  {
+    id: '13',
+    title: 'US Open Tennis Championships',
+    date: 'Aug 31 - Sep 13, 2026',
+    location: 'New York',
+    price: '$600+',
+    category: 'sports',
+    tags: ['Tennis', 'Grand Slam'],
+    ticketUrl: 'https://usopen.org'
+  },
+  {
+    id: '14',
+    title: 'Cannes Yachting Festival',
+    date: 'Sep 8-13, 2026',
+    location: 'Cannes',
+    price: 'EUR 75+',
+    category: 'yachts',
+    tags: ['Superyachts', 'Mediterranean'],
+    ticketUrl: 'https://cannesyachtingfestival.com'
+  },
+  {
+    id: '15',
+    title: 'Canelo vs Bivol II',
+    date: 'Sep 19, 2026',
+    location: 'Las Vegas',
+    price: '$1,200+',
+    category: 'sports',
+    tags: ['Boxing', 'Title Fight'],
+    ticketUrl: '#'
+  },
+  {
+    id: '16',
+    title: 'Bonhams Quail Lodge Auction',
+    date: 'Aug 15, 2026',
+    location: 'Carmel Valley',
+    price: 'Est. $12M+',
+    category: 'auctions',
+    tags: ['Cars', 'Bonhams'],
+    ticketUrl: 'https://bonhams.com/quail-lodge'
+  },
+  {
+    id: '17',
+    title: 'Concours d\'Elegance Pebble Beach',
+    date: 'Aug 16, 2026',
+    location: 'Pebble Beach',
+    price: '$750+',
+    category: 'experiences',
+    tags: ['Cars', 'Classic'],
+    ticketUrl: 'https://pebblebeachconcours.net'
+  },
+  {
+    id: '18',
+    title: 'Phillips New York Watch Auction XI',
+    date: 'Aug 22, 2026',
+    location: 'New York',
+    price: 'Est. $3M+',
+    category: 'auctions',
+    tags: ['Watches', 'Phillips'],
+    ticketUrl: 'https://phillips.com'
+  },
+  {
+    id: '19',
+    title: 'Heritage Luxury Accessories',
+    date: 'Aug 25, 2026',
+    location: 'Dallas',
+    price: 'Est. $1.5M+',
+    category: 'auctions',
+    tags: ['Bags', 'Hermès'],
+    ticketUrl: 'https://heritageauctions.com'
+  },
+  {
+    id: '20',
+    title: 'Antiquorum Geneva Watch Auction',
+    date: 'Sep 26, 2026',
+    location: 'Geneva',
+    price: 'Est. CHF 2M+',
+    category: 'auctions',
+    tags: ['Watches', 'Vintage'],
+    ticketUrl: 'https://antiquorum.swiss'
+  },
+  {
+    id: '21',
+    title: 'F1 Singapore Grand Prix',
+    date: 'Oct 4, 2026',
+    location: 'Singapore',
+    price: 'S$1,500+',
+    category: 'sports',
+    tags: ['F1', 'Night Race'],
+    ticketUrl: 'https://singaporegp.sg'
+  },
+  {
+    id: '22',
+    title: 'Frieze London',
+    date: 'Oct 8-11, 2026',
+    location: 'London',
+    price: '£40+',
+    category: 'arts',
+    tags: ['Art', 'Contemporary'],
+    ticketUrl: 'https://frieze.com'
+  },
+  {
+    id: '23',
+    title: 'Art Basel Paris',
+    date: 'Oct 16-19, 2026',
+    location: 'Paris',
+    price: '$75-$500',
+    category: 'arts',
+    tags: ['Art', 'Contemporary'],
+    ticketUrl: 'https://artbasel.com/paris'
+  },
+  {
+    id: '24',
+    title: 'Fort Lauderdale Boat Show',
+    date: 'Oct 28 - Nov 1, 2026',
+    location: 'Fort Lauderdale',
+    price: '$150+',
+    category: 'yachts',
+    tags: ['Superyachts', 'Americas'],
+    ticketUrl: 'https://flibs.com'
+  },
+  {
+    id: '25',
+    title: 'Christie\'s Hong Kong Autumn Auctions',
+    date: 'Oct 24, 2026',
+    location: 'Hong Kong',
+    price: 'Est. $15M+',
+    category: 'auctions',
+    tags: ['Art', 'Asia'],
+    ticketUrl: 'https://christies.com'
+  },
+  {
+    id: '26',
+    title: 'Paris Fashion Week SS27',
+    date: 'Oct 1-9, 2026',
+    location: 'Paris',
+    price: 'EUR 500+',
+    category: 'experiences',
+    tags: ['Fashion', 'Haute Couture'],
+    ticketUrl: '#'
+  },
+  {
+    id: '27',
+    title: 'Phillips Geneva Watch Auction XVIII',
+    date: 'Nov 8, 2026',
+    location: 'Geneva',
+    price: 'Est. CHF 8M+',
+    category: 'auctions',
+    tags: ['Watches', 'Phillips'],
+    ticketUrl: 'https://phillips.com'
+  },
+  {
+    id: '28',
+    title: 'Sotheby\'s Contemporary Evening NY',
+    date: 'Nov 18, 2026',
+    location: 'New York',
+    price: 'Est. $20M+',
+    category: 'auctions',
+    tags: ['Art', 'Contemporary'],
+    ticketUrl: 'https://sothebys.com'
+  },
+  {
+    id: '29',
+    title: 'Abu Dhabi Grand Prix',
+    date: 'Nov 29, 2026',
+    location: 'Yas Marina',
+    price: 'AED 2,500+',
+    category: 'sports',
+    tags: ['F1', 'Season Finale'],
+    ticketUrl: 'https://yasmarinacircuit.com'
+  },
+  {
+    id: '30',
+    title: 'Milan Fashion Week SS27',
+    date: 'Nov 18-24, 2026',
+    location: 'Milan',
+    price: 'EUR 400+',
+    category: 'experiences',
+    tags: ['Fashion', 'Luxury'],
+    ticketUrl: '#'
+  },
+  {
+    id: '31',
+    title: 'Wine Spectator Auction',
+    date: 'Nov 12, 2026',
+    location: 'New York',
+    price: 'Est. $500K+',
+    category: 'auctions',
+    tags: ['Wine', 'Bordeaux'],
+    ticketUrl: 'https://zachys.com'
+  },
+  {
+    id: '32',
+    title: 'Christie\'s Magnificent Jewels',
+    date: 'Dec 8, 2026',
+    location: 'New York',
+    price: 'Est. $8M+',
+    category: 'auctions',
+    tags: ['Jewelry', 'Diamonds'],
+    ticketUrl: 'https://christies.com'
+  },
+  {
+    id: '33',
+    title: 'Nobu Miami New Year\'s Eve',
+    date: 'Dec 31, 2026',
+    location: 'Miami',
+    price: '$2,500+',
+    category: 'experiences',
+    tags: ['Dining', 'NYE'],
+    ticketUrl: '#'
+  },
+  {
+    id: '34',
+    title: 'Frieze Los Angeles',
+    date: 'Dec 10-13, 2026',
+    location: 'Los Angeles',
+    price: '$50+',
+    category: 'arts',
+    tags: ['Art', 'Contemporary'],
+    ticketUrl: 'https://frieze.com'
+  },
+  {
+    id: '35',
+    title: 'Australian Open',
+    date: 'Jan 18-31, 2027',
+    location: 'Melbourne',
+    price: 'AUD 500+',
+    category: 'sports',
+    tags: ['Tennis', 'Grand Slam'],
+    ticketUrl: 'https://ausopen.com'
+  },
+  {
+    id: '36',
+    title: 'Superyacht Miami',
+    date: 'Jan 15-18, 2027',
+    location: 'Miami',
+    price: '$250+',
+    category: 'yachts',
+    tags: ['Superyachts', 'Americas'],
+    ticketUrl: 'https://superyachtmiami.com'
+  },
+  {
+    id: '37',
+    title: 'Davos World Economic Forum',
+    date: 'Jan 20-24, 2027',
+    location: 'Davos',
+    price: 'Invitation Only',
+    category: 'experiences',
+    tags: ['Business', 'Networking'],
+    ticketUrl: '#'
+  },
+  {
+    id: '38',
+    title: 'New York Fashion Week FW27',
+    date: 'Feb 12-18, 2027',
+    location: 'New York',
+    price: '$300+',
+    category: 'experiences',
+    tags: ['Fashion', 'NYFW'],
+    ticketUrl: '#'
+  },
+  {
+    id: '39',
+    title: 'NBA All-Star Weekend',
+    date: 'Feb 14-16, 2027',
+    location: 'Indianapolis',
+    price: '$800+',
+    category: 'sports',
+    tags: ['Basketball', 'All-Star'],
+    ticketUrl: 'https://nba.com'
+  },
+  {
+    id: '40',
+    title: 'Dubai International Boat Show',
+    date: 'Mar 10-14, 2027',
+    location: 'Dubai',
+    price: 'AED 150+',
+    category: 'yachts',
+    tags: ['Superyachts', 'Middle East'],
+    ticketUrl: 'https://dubaiboatshow.com'
+  },
+  {
+    id: '41',
+    title: 'TEFAF Maastricht',
+    date: 'Mar 12-21, 2027',
+    location: 'Maastricht',
+    price: 'EUR 50+',
+    category: 'arts',
+    tags: ['Art', 'Fine Art'],
+    ticketUrl: 'https://tefaf.com'
+  },
+  {
+    id: '42',
+    title: 'Bonhams Bond Street Jewels',
+    date: 'Mar 15, 2027',
+    location: 'London',
+    price: 'Est. £800K+',
+    category: 'auctions',
+    tags: ['Jewelry', 'Bonhams'],
+    ticketUrl: 'https://bonhams.com'
+  },
+  {
+    id: '43',
+    title: 'Art Basel Hong Kong',
+    date: 'Mar 25-27, 2027',
+    location: 'Hong Kong',
+    price: '$75-$500',
+    category: 'arts',
+    tags: ['Art', 'Contemporary'],
+    ticketUrl: 'https://artbasel.com/hong-kong'
+  },
+  {
+    id: '44',
+    title: 'The Masters Tournament',
+    date: 'Apr 5-11, 2027',
+    location: 'Augusta',
+    price: '$3,000+',
+    category: 'sports',
+    tags: ['Golf', 'Major'],
+    ticketUrl: 'https://masters.com'
+  },
+  {
+    id: '45',
+    title: 'Coachella VIP Weekend 1',
+    date: 'Apr 10-12, 2027',
+    location: 'Indio',
+    price: '$3,500+',
+    category: 'experiences',
+    tags: ['Music', 'Festival'],
+    ticketUrl: 'https://coachella.com'
+  }
 ];
+
+const RAZORPAY_KEY_ID = 'rzp_test_YOUR_KEY_HERE';
+
+// ===== HELPERS =====
+function validateEmail(email) {
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+}
+
+function setButtonLoading(btn, text) {
+  btn.dataset.originalText = btn.innerHTML;
+  btn.innerHTML = `<span style="display:flex;align-items:center;justify-content:center;gap:6px;">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="animation:spin 1s linear infinite;">
+      <circle cx="12" cy="12" r="10" stroke-dasharray="60" stroke-dashoffset="20"/>
+    </svg>
+    ${text}
+  </span>`;
+  btn.disabled = true;
+}
+
+function resetButton(btn) {
+  if (btn.dataset.originalText) {
+    btn.innerHTML = btn.dataset.originalText;
+  }
+  btn.disabled = false;
+}
+
+// ===== WEB STORAGE =====
+const webStorage = {
+  async get(keys) {
+    const result = {};
+    keys.forEach(key => {
+      try {
+        const val = localStorage.getItem(key);
+        result[key] = val ? JSON.parse(val) : null;
+      } catch (e) {
+        result[key] = null;
+      }
+    });
+    return result;
+  },
+  async set(items) {
+    Object.entries(items).forEach(([key, val]) => {
+      localStorage.setItem(key, JSON.stringify(val));
+    });
+  },
+  async remove(keys) {
+    keys.forEach(key => localStorage.removeItem(key));
+  }
+};
 
 // ===== INIT =====
 document.addEventListener('DOMContentLoaded', () => {
   setupEventListeners();
   renderFeed();
+  updateTierBadge();
 });
 
 // ===== EVENT LISTENERS =====
 function setupEventListeners() {
+  // Category tabs
   document.querySelectorAll('.category-tabs .tab').forEach(tab => {
     tab.addEventListener('click', () => {
       document.querySelectorAll('.category-tabs .tab').forEach(t => t.classList.remove('active'));
@@ -71,6 +528,7 @@ function setupEventListeners() {
     });
   });
 
+  // Bottom nav
   document.querySelectorAll('.bottom-nav .nav-item').forEach(item => {
     item.addEventListener('click', () => {
       document.querySelectorAll('.bottom-nav .nav-item').forEach(i => i.classList.remove('active'));
@@ -78,22 +536,9 @@ function setupEventListeners() {
       switchView(item.dataset.view || 'feed');
     });
   });
-}
 
-// ===== TIER BADGE =====
-function updateTierBadge() {
-  const badge = document.getElementById('tier-badge');
-  if (!badge) return;
-  const tier = localStorage.getItem('tier') || 'free';
-  if (tier === 'premium') {
-    badge.textContent = 'PREMIUM';
-    badge.style.background = 'linear-gradient(135deg, rgba(201,162,39,0.2), rgba(201,162,39,0.1))';
-    badge.style.color = '#f0d878';
-  } else {
-    badge.textContent = 'FREE';
-    badge.style.background = '';
-    badge.style.color = '';
-  }
+  // Logout button
+  document.getElementById('btn-logout')?.addEventListener('click', handleLogout);
 }
 
 // ===== VIEW SWITCHING =====
@@ -226,7 +671,6 @@ function attachButtonListeners() {
     });
   }
 }
-
 
 // ===== SUBSCRIBE / PRICING =====
 function renderSubscribe() {
@@ -417,6 +861,7 @@ function showPaymentSuccess() {
   `;
 
   document.getElementById('btn-success-continue')?.addEventListener('click', () => {
+    updateTierBadge();
     switchView('feed');
   });
 }
@@ -429,35 +874,32 @@ function renderCalendar() {
   let html = `
     <div class="view-section">
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
-        <span style="color:var(--text-primary);font-size:16px;font-weight:500;">Events Calendar</span>
-        <span style="color:var(--text-muted);font-size:12px;">${EVENTS.length} events</span>
+        <span style="color:var(--text-primary);font-size:16px;font-weight:600;">Event Calendar</span>
+        <span style="color:var(--text-muted);font-size:11px;">${EVENTS.length} events</span>
       </div>
-      <div style="background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius-md);padding:16px;">
-        <div style="color:var(--gold);font-size:14px;font-weight:600;margin-bottom:12px;text-align:center;">2026 - 2027</div>
-        <div style="display:flex;flex-direction:column;gap:8px;max-height:400px;overflow-y:auto;">
+      <div style="display:flex;flex-direction:column;gap:10px;">
   `;
 
-  html += EVENTS.map(event => `
-    <div class="cal-event-item" data-event-id="${event.id}" style="display:flex;justify-content:space-between;align-items:center;padding:12px;background:var(--bg-elevated);border-radius:var(--radius-sm);border:1px solid var(--border);cursor:pointer;">
-      <div>
-        <span style="color:var(--text-primary);font-size:13px;display:block;font-weight:500;">${event.title}</span>
-        <span style="color:var(--text-muted);font-size:11px;">${event.location} - ${event.price}</span>
-      </div>
-      <span style="color:var(--gold);font-size:11px;font-weight:500;white-space:nowrap;margin-left:8px;">${event.date}</span>
-    </div>
-  `).join('');
-
-  html += `
+  EVENTS.forEach(event => {
+    html += `
+      <div class="event-card" data-event-id="${event.id}" style="padding:12px;">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;">
+          <div>
+            <div style="color:var(--text-primary);font-size:13px;font-weight:600;">${event.title}</div>
+            <div style="color:var(--text-muted);font-size:11px;margin-top:2px;">${event.date} · ${event.location}</div>
+          </div>
+          <div style="color:var(--gold);font-size:12px;font-weight:600;">${event.price}</div>
         </div>
       </div>
-    </div>
-  `;
+    `;
+  });
 
+  html += '</div></div>';
   main.innerHTML = html;
 
-  document.querySelectorAll('.cal-event-item').forEach(item => {
-    item.addEventListener('click', () => {
-      const eventId = item.dataset.eventId;
+  document.querySelectorAll('.event-card').forEach(card => {
+    card.addEventListener('click', () => {
+      const eventId = card.dataset.eventId;
       if (eventId) showEventDetail(eventId);
     });
   });
@@ -468,56 +910,51 @@ function renderSettings() {
   const main = document.getElementById('main-content');
   if (!main) return;
 
+  const tier = localStorage.getItem('tier') || 'free';
+  const isPremium = tier === 'premium';
+
   main.innerHTML = `
     <div class="view-section">
-      <div style="color:var(--text-primary);font-size:16px;font-weight:500;margin-bottom:20px;">Preferences</div>
+      <div style="color:var(--text-primary);font-size:16px;font-weight:600;margin-bottom:16px;">Settings</div>
 
-      <div class="settings-row">
-        <span class="settings-label">Auctions & Collectibles</span>
-        <div class="toggle active" data-pref="auctions"><div class="toggle-knob"></div></div>
+      <div style="background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius-md);padding:16px;margin-bottom:16px;">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
+          <div>
+            <div style="color:var(--text-primary);font-size:14px;font-weight:600;">Current Plan</div>
+            <div style="color:var(--text-muted);font-size:11px;margin-top:2px;">${isPremium ? 'Premium - Unlimited access' : 'Free - Limited access'}</div>
+          </div>
+          <span class="badge" style="background:${isPremium ? 'linear-gradient(135deg,rgba(201,162,39,0.2),rgba(201,162,39,0.1))' : ''};color:${isPremium ? '#f0d878' : ''};">${isPremium ? 'PREMIUM' : 'FREE'}</span>
+        </div>
+        ${!isPremium ? `<button class="btn btn-primary" id="btn-settings-upgrade" style="width:100%;">Upgrade to Premium</button>` : ''}
       </div>
 
-      <div class="settings-row">
-        <span class="settings-label">Luxury Sports</span>
-        <div class="toggle active" data-pref="sports"><div class="toggle-knob"></div></div>
-      </div>
-
-      <div class="settings-row">
-        <span class="settings-label">Yacht Shows & Maritime</span>
-        <div class="toggle active" data-pref="yachts"><div class="toggle-knob"></div></div>
-      </div>
-
-      <div class="settings-row">
-        <span class="settings-label">Push notifications</span>
-        <div class="toggle active" data-pref="notifications"><div class="toggle-knob"></div></div>
-      </div>
-
-      <div class="settings-row">
-        <span class="settings-label">Dark mode</span>
-        <div class="toggle active" data-pref="darkmode"><div class="toggle-knob"></div></div>
-      </div>
-
-      <div style="margin-top:24px;padding:14px;background:linear-gradient(135deg, rgba(201,162,39,0.06), rgba(201,162,39,0.02));border-radius:var(--radius-sm);border:1px solid rgba(201,162,39,0.12);">
-        <div style="color:var(--gold);font-size:13px;font-weight:600;margin-bottom:4px;">Current plan: Free</div>
-        <div style="color:var(--text-muted);font-size:12px;line-height:1.4;">
-          You are viewing all ${EVENTS.length} events. Upgrade for VIP alerts and exclusive perks.
+      <div style="background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius-md);padding:16px;margin-bottom:16px;">
+        <div style="color:var(--text-primary);font-size:14px;font-weight:600;margin-bottom:12px;">Preferences</div>
+        <div style="display:flex;flex-direction:column;gap:12px;">
+          <label style="display:flex;justify-content:space-between;align-items:center;cursor:pointer;">
+            <span style="color:var(--text-secondary);font-size:13px;">Push Notifications</span>
+            <input type="checkbox" id="pref-notifications" checked style="accent-color:var(--gold);">
+          </label>
+          <label style="display:flex;justify-content:space-between;align-items:center;cursor:pointer;">
+            <span style="color:var(--text-secondary);font-size:13px;">Email Alerts</span>
+            <input type="checkbox" id="pref-email" style="accent-color:var(--gold);">
+          </label>
+          <label style="display:flex;justify-content:space-between;align-items:center;cursor:pointer;">
+            <span style="color:var(--text-secondary);font-size:13px;">Dark Mode</span>
+            <input type="checkbox" id="pref-darkmode" checked disabled style="accent-color:var(--gold);">
+          </label>
         </div>
       </div>
 
-      <div style="margin-top:20px;padding-top:16px;border-top:1px solid var(--border);">
-        <div style="color:var(--text-muted);font-size:11px;text-align:center;">
-          Elite Events Hub v1.0.0<br>
-          <span style="color:var(--gold);">Exclusive Luxury Experiences</span>
-        </div>
+      <div style="background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius-md);padding:16px;">
+        <div style="color:var(--text-primary);font-size:14px;font-weight:600;margin-bottom:12px;">Account</div>
+        <button class="btn btn-secondary" id="btn-settings-logout" style="width:100%;">Logout</button>
       </div>
     </div>
   `;
 
-  document.querySelectorAll('.toggle').forEach(toggle => {
-    toggle.addEventListener('click', () => {
-      toggle.classList.toggle('active');
-    });
-  });
+  document.getElementById('btn-settings-upgrade')?.addEventListener('click', renderSubscribe);
+  document.getElementById('btn-settings-logout')?.addEventListener('click', handleLogout);
 }
 
 // ===== EVENT DETAIL =====
@@ -537,82 +974,114 @@ function showEventDetail(eventId) {
         Back
       </button>
 
-      <div style="text-align:center;margin-bottom:16px;">
-        <div style="color:var(--gold);font-size:11px;font-weight:600;letter-spacing:1px;text-transform:uppercase;margin-bottom:6px;">${event.category}</div>
-        <div style="color:var(--text-primary);font-size:18px;font-weight:600;line-height:1.3;">${event.title}</div>
-        <div style="color:var(--gold);font-size:20px;font-weight:600;margin-top:8px;">${event.price}</div>
+      <div style="margin-bottom:16px;">
+        <div style="color:var(--text-primary);font-size:20px;font-weight:600;margin-bottom:8px;">${event.title}</div>
+        <div style="color:var(--gold);font-size:18px;font-weight:600;margin-bottom:12px;">${event.price}</div>
       </div>
 
-      <div style="background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius-md);padding:14px;margin-bottom:14px;">
-        <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;color:var(--text-secondary);font-size:13px;">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--gold)" stroke-width="2">
-            <rect x="3" y="4" width="18" height="18" rx="2"/>
-            <line x1="16" y1="2" x2="16" y2="6"/>
-            <line x1="8" y1="2" x2="8" y2="6"/>
-            <line x1="3" y1="10" x2="21" y2="10"/>
-          </svg>
-          ${event.date}
-        </div>
-        <div style="display:flex;align-items:center;gap:8px;color:var(--text-secondary);font-size:13px;">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--gold)" stroke-width="2">
-            <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/>
-            <circle cx="12" cy="10" r="3"/>
-          </svg>
-          ${event.location}
+      <div style="background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius-md);padding:16px;margin-bottom:16px;">
+        <div style="display:flex;flex-direction:column;gap:10px;">
+          <div style="display:flex;align-items:center;gap:8px;color:var(--text-secondary);font-size:13px;">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--gold)" stroke-width="2">
+              <rect x="3" y="4" width="18" height="18" rx="2"/>
+              <line x1="16" y1="2" x2="16" y2="6"/>
+              <line x1="8" y1="2" x2="8" y2="6"/>
+              <line x1="3" y1="10" x2="21" y2="10"/>
+            </svg>
+            ${event.date}
+          </div>
+          <div style="display:flex;align-items:center;gap:8px;color:var(--text-secondary);font-size:13px;">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--gold)" stroke-width="2">
+              <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/>
+              <circle cx="12" cy="10" r="3"/>
+            </svg>
+            ${event.location}
+          </div>
         </div>
       </div>
 
-      <div style="margin-bottom:14px;">
+      <div style="margin-bottom:16px;">
         ${event.tags.map(t => `<span class="event-tag tag-${event.category}">${t}</span>`).join('')}
       </div>
 
-      <div class="cta-row" style="margin-bottom:14px;">
-        <button class="btn btn-primary btn-ticket" data-url="${event.ticketUrl}" style="padding:12px;">Get tickets now</button>
-        <button class="btn btn-secondary btn-remind" data-id="${event.id}" style="padding:12px;">Set reminder</button>
-      </div>
-
-      <div style="background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius-md);padding:14px;">
-        <div style="color:var(--text-secondary);font-size:12px;font-weight:500;margin-bottom:8px;">About this event</div>
-        <div style="color:var(--text-muted);font-size:12px;line-height:1.5;">
-          This exclusive event is curated for Elite Events Hub members. Join us for an unforgettable luxury experience with world-class amenities and VIP access.
-        </div>
+      <div style="display:flex;flex-direction:column;gap:10px;">
+        <button class="btn btn-primary btn-ticket" data-url="${event.ticketUrl}">Get tickets</button>
+        <button class="btn btn-secondary btn-remind" data-id="${event.id}">Remind me</button>
       </div>
     </div>
   `;
 
   document.getElementById('btn-detail-back')?.addEventListener('click', () => switchView('feed'));
 
-  document.querySelectorAll('.btn-ticket').forEach(btn => {
-    btn.addEventListener('click', () => openTicket(btn.dataset.url));
+  document.querySelector('.btn-ticket')?.addEventListener('click', (e) => {
+    e.stopPropagation();
+    openTicket(event.ticketUrl);
   });
 
-  document.querySelectorAll('.btn-remind').forEach(btn => {
-    btn.addEventListener('click', () => setReminder(btn.dataset.id));
+  document.querySelector('.btn-remind')?.addEventListener('click', (e) => {
+    e.stopPropagation();
+    setReminder(event.id);
   });
 }
 
-// ===== UTILITIES =====
+// ===== TICKET & REMINDER =====
 function openTicket(url) {
-  if (url === '#') {
-    showToast('Tickets available soon');
-    return;
+  if (url && url !== '#') {
+    window.open(url, '_blank');
+  } else {
+    showToast('Tickets coming soon!');
   }
-  window.open(url, '_blank');
 }
 
 function setReminder(eventId) {
   const event = EVENTS.find(e => e.id === eventId);
   if (!event) return;
-  showToast('Reminder set for ' + event.title);
+  showToast(`Reminder set for ${event.title}`);
 }
 
+// ===== LOGOUT =====
+function handleLogout() {
+  localStorage.removeItem('user');
+  localStorage.removeItem('token');
+  localStorage.removeItem('tier');
+  currentUser = null;
+  showToast('Logged out successfully');
+  updateTierBadge();
+  renderFeed();
+}
+
+// ===== TIER BADGE =====
+function updateTierBadge() {
+  const badge = document.getElementById('tier-badge');
+  if (!badge) return;
+  const tier = localStorage.getItem('tier') || 'free';
+  if (tier === 'premium') {
+    badge.textContent = 'PREMIUM';
+    badge.style.background = 'linear-gradient(135deg, rgba(201,162,39,0.2), rgba(201,162,39,0.1))';
+    badge.style.color = '#f0d878';
+  } else {
+    badge.textContent = 'FREE';
+    badge.style.background = '';
+    badge.style.color = '';
+  }
+}
+
+// ===== TOAST =====
 function showToast(message) {
-  const existing = document.querySelector('.toast');
-  if (existing) existing.remove();
+  const container = document.getElementById('toast-container');
+  if (!container) return;
 
   const toast = document.createElement('div');
   toast.className = 'toast';
   toast.textContent = message;
-  document.body.appendChild(toast);
-  setTimeout(() => toast.remove(), 3000);
+  container.appendChild(toast);
+
+  requestAnimationFrame(() => {
+    toast.classList.add('show');
+  });
+
+  setTimeout(() => {
+    toast.classList.remove('show');
+    setTimeout(() => toast.remove(), 300);
+  }, 3000);
 }
