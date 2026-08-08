@@ -80,6 +80,22 @@ function setupEventListeners() {
   });
 }
 
+// ===== TIER BADGE =====
+function updateTierBadge() {
+  const badge = document.getElementById('tier-badge');
+  if (!badge) return;
+  const tier = localStorage.getItem('tier') || 'free';
+  if (tier === 'premium') {
+    badge.textContent = 'PREMIUM';
+    badge.style.background = 'linear-gradient(135deg, rgba(201,162,39,0.2), rgba(201,162,39,0.1))';
+    badge.style.color = '#f0d878';
+  } else {
+    badge.textContent = 'FREE';
+    badge.style.background = '';
+    badge.style.color = '';
+  }
+}
+
 // ===== VIEW SWITCHING =====
 function switchView(view) {
   currentView = view;
@@ -100,22 +116,29 @@ function renderFeed() {
   const main = document.getElementById('main-content');
   if (!main) return;
 
+  const userTier = localStorage.getItem('tier') || 'free';
   const filtered = currentCategory === 'all'
     ? EVENTS
     : EVENTS.filter(e => e.category === currentCategory);
 
+  const freeLimit = 5;
+  const showBanner = userTier === 'free';
+  const displayEvents = userTier === 'free' ? filtered.slice(0, freeLimit) : filtered;
+
   let html = '<div class="view-section">';
 
-  html += `
-    <div class="upgrade-banner">
-      <div class="upgrade-text">
-        Unlock <strong>all ${EVENTS.length} premium events</strong><br>and VIP early access alerts
+  if (showBanner) {
+    html += `
+      <div class="upgrade-banner">
+        <div class="upgrade-text">
+          Unlock <strong>all ${EVENTS.length} premium events</strong><br>and VIP early access alerts
+        </div>
+        <button class="upgrade-btn" id="btn-upgrade-banner">Upgrade</button>
       </div>
-      <button class="upgrade-btn" id="btn-upgrade-banner">Upgrade</button>
-    </div>
-  `;
+    `;
+  }
 
-  html += filtered.map(event => `
+  html += displayEvents.map(event => `
     <div class="event-card" data-event-id="${event.id}">
       <div class="event-header">
         <div class="event-title">${event.title}</div>
@@ -150,6 +173,16 @@ function renderFeed() {
   `).join('');
 
   html += '</div>';
+
+  if (userTier === 'free' && filtered.length > freeLimit) {
+    html += `
+      <div style="text-align:center;padding:20px 0 40px;color:var(--text-muted);font-size:13px;">
+        <div style="margin-bottom:8px;font-size:16px;color:var(--gold);font-weight:600;">+${filtered.length - freeLimit} more events</div>
+        <span style="color:var(--gold);cursor:pointer;text-decoration:underline;" id="btn-upgrade-link">Upgrade to see all</span>
+      </div>
+    `;
+  }
+
   main.innerHTML = html;
   attachButtonListeners();
 }
@@ -181,9 +214,211 @@ function attachButtonListeners() {
   if (upgradeBanner) {
     upgradeBanner.addEventListener('click', (e) => {
       e.stopPropagation();
-      showToast('Upgrade coming soon!');
+      renderSubscribe();
     });
   }
+
+  const upgradeLink = document.getElementById('btn-upgrade-link');
+  if (upgradeLink) {
+    upgradeLink.addEventListener('click', (e) => {
+      e.stopPropagation();
+      renderSubscribe();
+    });
+  }
+}
+
+
+// ===== SUBSCRIBE / PRICING =====
+function renderSubscribe() {
+  const main = document.getElementById('main-content');
+  if (!main) return;
+
+  main.innerHTML = `
+    <div class="view-section">
+      <button class="back-btn" id="btn-sub-back">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M19 12H5M12 19l-7-7 7-7"/>
+        </svg>
+        Back to events
+      </button>
+
+      <div style="text-align:center;margin-bottom:20px;">
+        <img src="assets/logo.png" style="width:48px;height:48px;border-radius:10px;margin-bottom:10px;border:1px solid rgba(201,162,39,0.3);" alt="EEH">
+        <div style="color:var(--text-primary);font-size:18px;font-weight:600;margin-bottom:4px;">Go Premium</div>
+        <div style="color:var(--text-muted);font-size:12px;">Unlock exclusive events, VIP alerts, and direct booking links</div>
+      </div>
+
+      <div class="price-row">
+        <div class="price-card">
+          <div style="color:var(--text-muted);font-size:12px;">Monthly</div>
+          <div class="price-amount">Rs.999</div>
+          <div class="price-period">per month</div>
+          <button class="btn btn-secondary btn-choose-plan" data-plan="monthly" style="margin-top:12px;width:100%;">Choose</button>
+        </div>
+        <div class="price-card featured">
+          <div style="color:var(--gold);font-size:12px;font-weight:600;">Yearly</div>
+          <div class="price-amount">Rs.9,988</div>
+          <div class="price-period">per year</div>
+          <div class="price-save">Save Rs.2,000</div>
+          <button class="btn btn-primary btn-choose-plan" data-plan="yearly" style="margin-top:8px;width:100%;">Choose</button>
+        </div>
+      </div>
+
+      <div style="margin-top:24px;display:flex;flex-direction:column;gap:12px;">
+        ${[
+          'Unlimited event access across all categories',
+          'Instant official ticket purchase links',
+          'VIP early access alerts (24h before public)',
+          'Personalized concierge recommendations',
+          'WhatsApp/SMS alerts for flash sales',
+          'Ad-free premium experience'
+        ].map(f => `
+          <div style="display:flex;align-items:center;gap:10px;color:var(--text-secondary);font-size:12px;">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--gold)" stroke-width="2.5">
+              <polyline points="20 6 9 17 4 12"/>
+            </svg>
+            ${f}
+          </div>
+        `).join('')}
+      </div>
+
+      <div style="margin-top:24px;padding:12px;background:rgba(255,255,255,0.02);border-radius:var(--radius-sm);border:1px solid var(--border);text-align:center;">
+        <div style="color:var(--text-muted);font-size:11px;">Secure payment powered by</div>
+        <div style="display:flex;justify-content:center;gap:16px;margin-top:8px;">
+          <span style="color:var(--gold);font-size:12px;font-weight:600;">Razorpay</span>
+          <span style="color:var(--text-muted);">|</span>
+          <span style="color:#6772e5;font-size:12px;font-weight:600;">Stripe</span>
+        </div>
+      </div>
+    </div>
+  `;
+
+  document.getElementById('btn-sub-back')?.addEventListener('click', () => switchView('feed'));
+
+  document.querySelectorAll('.btn-choose-plan').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const plan = btn.dataset.plan;
+      initiatePayment(plan);
+    });
+  });
+}
+
+function initiatePayment(plan) {
+  const main = document.getElementById('main-content');
+  if (!main) return;
+
+  const planName = plan === 'yearly' ? 'Yearly Premium' : 'Monthly Premium';
+  const amount = plan === 'yearly' ? '9,988' : '999';
+
+  main.innerHTML = `
+    <div class="view-section">
+      <button class="back-btn" id="btn-pay-back">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M19 12H5M12 19l-7-7 7-7"/>
+        </svg>
+        Back
+      </button>
+
+      <div style="text-align:center;margin-bottom:20px;">
+        <div style="color:var(--text-primary);font-size:16px;font-weight:600;margin-bottom:4px;">Complete payment</div>
+        <div style="color:var(--text-muted);font-size:12px;">Secure 256-bit SSL encrypted</div>
+      </div>
+
+      <div style="background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius-md);padding:16px;margin-bottom:16px;">
+        <div style="color:var(--text-muted);font-size:11px;margin-bottom:4px;text-transform:uppercase;letter-spacing:0.5px;">Selected plan</div>
+        <div style="color:var(--text-primary);font-size:20px;font-weight:600;">${planName}</div>
+        <div style="color:var(--gold);font-size:24px;font-weight:600;margin-top:6px;">Rs.${amount}</div>
+        <div style="color:var(--text-muted);font-size:11px;margin-top:4px;">${plan === 'yearly' ? 'Billed annually. Cancel anytime.' : 'Billed monthly. Cancel anytime.'}</div>
+      </div>
+
+      <div style="display:flex;flex-direction:column;gap:10px;">
+        <button class="btn btn-primary btn-pay" data-plan="${plan}" data-gateway="razorpay" style="padding:12px;font-size:13px;">
+          <span style="display:flex;align-items:center;justify-content:center;gap:6px;">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
+            Pay with Razorpay
+          </span>
+        </button>
+      </div>
+
+      <div style="margin-top:16px;text-align:center;color:var(--text-muted);font-size:10px;">
+        By completing this payment, you agree to our Terms of Service and Privacy Policy.
+      </div>
+    </div>
+  `;
+
+  document.getElementById('btn-pay-back')?.addEventListener('click', () => renderSubscribe());
+
+  document.querySelectorAll('.btn-pay').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const plan = btn.dataset.plan;
+      processPayment(plan);
+    });
+  });
+}
+
+async function processPayment(plan) {
+  const btn = document.querySelector('.btn-pay');
+  if (btn) {
+    btn.innerHTML = '<span style="display:flex;align-items:center;justify-content:center;gap:6px;">Processing...</span>';
+    btn.disabled = true;
+    btn.style.opacity = '0.7';
+  }
+
+  try {
+    await new Promise(resolve => setTimeout(resolve, 1500));
+
+    localStorage.setItem('tier', 'premium');
+    showPaymentSuccess();
+
+  } catch (err) {
+    showToast('Payment failed. Please try again.');
+    if (btn) {
+      btn.disabled = false;
+      btn.style.opacity = '1';
+      btn.innerHTML = '<span style="display:flex;align-items:center;justify-content:center;gap:6px;">Pay with Razorpay</span>';
+    }
+  }
+}
+
+function showPaymentSuccess() {
+  const main = document.getElementById('main-content');
+  if (!main) return;
+
+  main.innerHTML = `
+    <div class="view-section" style="text-align:center;padding-top:40px;">
+      <div style="width:60px;height:60px;border-radius:50%;background:linear-gradient(135deg,#34d399,#10b981);display:flex;align-items:center;justify-content:center;margin:0 auto 20px;">
+        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3">
+          <polyline points="20 6 9 17 4 12"/>
+        </svg>
+      </div>
+      <div style="color:var(--text-primary);font-size:20px;font-weight:600;margin-bottom:8px;">Welcome to Premium!</div>
+      <div style="color:var(--text-secondary);font-size:13px;margin-bottom:24px;">Your payment was successful. You now have unlimited access to all exclusive events.</div>
+
+      <div style="background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius-md);padding:16px;margin-bottom:24px;text-align:left;">
+        <div style="color:var(--gold);font-size:12px;font-weight:600;margin-bottom:8px;">What's included:</div>
+        <div style="display:flex;flex-direction:column;gap:8px;">
+          <div style="color:var(--text-secondary);font-size:12px;display:flex;align-items:center;gap:8px;">
+            <span style="color:#34d399;">✓</span> Unlimited event access
+          </div>
+          <div style="color:var(--text-secondary);font-size:12px;display:flex;align-items:center;gap:8px;">
+            <span style="color:#34d399;">✓</span> VIP early access alerts
+          </div>
+          <div style="color:var(--text-secondary);font-size:12px;display:flex;align-items:center;gap:8px;">
+            <span style="color:#34d399;">✓</span> Direct ticket links
+          </div>
+          <div style="color:var(--text-secondary);font-size:12px;display:flex;align-items:center;gap:8px;">
+            <span style="color:#34d399;">✓</span> Ad-free experience
+          </div>
+        </div>
+      </div>
+
+      <button class="btn btn-primary" id="btn-success-continue" style="padding:12px 32px;">Continue to Events</button>
+    </div>
+  `;
+
+  document.getElementById('btn-success-continue')?.addEventListener('click', () => {
+    switchView('feed');
+  });
 }
 
 // ===== CALENDAR =====
