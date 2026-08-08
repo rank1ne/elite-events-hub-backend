@@ -2,10 +2,10 @@ const express = require('express');
 const router = express.Router();
 const Event = require('../models/Event');
 
-// GET /api/events - List all events with filters
+// GET /api/events - List all events with filters (NO DEFAULT LIMIT)
 router.get('/', async (req, res) => {
   try {
-    const { category, tier, search, from, to, limit = 20, page = 1, featured } = req.query;
+    const { category, tier, search, from, to, limit, page = 1, featured } = req.query;
 
     const query = { isActive: true };
 
@@ -25,23 +25,26 @@ router.get('/', async (req, res) => {
       ];
     }
 
-    const skip = (parseInt(page) - 1) * parseInt(limit);
+    const total = await Event.countDocuments(query);
 
-    const [events, total] = await Promise.all([
-      Event.find(query)
-        .sort({ isFeatured: -1, startDate: 1 })
-        .skip(skip)
-        .limit(parseInt(limit))
-        .select('-__v'),
-      Event.countDocuments(query)
-    ]);
+    let eventsQuery = Event.find(query)
+      .sort({ isFeatured: -1, startDate: 1 })
+      .select('-__v');
+
+    // Pagination sirf tab jab limit explicitly pass ho
+    if (limit) {
+      const skip = (parseInt(page) - 1) * parseInt(limit);
+      eventsQuery = eventsQuery.skip(skip).limit(parseInt(limit));
+    }
+
+    const events = await eventsQuery;
 
     res.json({
       success: true,
       count: events.length,
       total,
-      page: parseInt(page),
-      pages: Math.ceil(total / parseInt(limit)),
+      page: limit ? parseInt(page) : 1,
+      pages: limit ? Math.ceil(total / parseInt(limit)) : 1,
       data: events
     });
   } catch (err) {
