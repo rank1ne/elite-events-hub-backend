@@ -1181,33 +1181,14 @@ async function autoSeedEvents() {
   }
 }
 
-// ==================== CONNECT DB & START SERVER ====================
-async function startServer() {
-  try {
-    if (!process.env.MONGODB_URI) {
-      console.error('ERROR: MONGODB_URI environment variable is not set');
-      process.exit(1);
-    }
-
-    await mongoose.connect(process.env.MONGODB_URI);
-    console.log('Connected to MongoDB');
-
-    // Auto-seed on startup
-    await autoSeedEvents();
-
-    // Start server
-    app.listen(PORT, () => {
-      console.log(`Server running on port ${PORT}`);
-    });
-  } catch (err) {
-    console.error('Server startup error:', err);
-    process.exit(1);
-  }
-}
-
 // ==================== API ROUTES ====================
 
-// Health check
+// Health check for Railway
+app.get('/health', (req, res) => {
+  res.status(200).json({ status: 'ok', timestamp: new Date().toISOString() });
+});
+
+// Root
 app.get('/', (req, res) => {
   res.json({ message: 'Elite Events Hub API is running', status: 'ok' });
 });
@@ -1298,5 +1279,31 @@ app.get('/api/stats', async (req, res) => {
     res.status(500).json({ success: false, message: err.message });
   }
 });
+
+// ==================== CONNECT DB & START SERVER ====================
+async function startServer() {
+  try {
+    if (!process.env.MONGODB_URI) {
+      console.error('ERROR: MONGODB_URI environment variable is not set');
+      process.exit(1);
+    }
+
+    // 1. PEHLE server start karo taaki Railway healthcheck pass ho sake
+    app.listen(PORT, '0.0.0.0', () => {
+      console.log(`Server running on port ${PORT}`);
+    });
+
+    // 2. PHIR DB connect karo (async, non-blocking)
+    await mongoose.connect(process.env.MONGODB_URI);
+    console.log('Connected to MongoDB');
+
+    // 3. Auto-seed on startup
+    await autoSeedEvents();
+
+  } catch (err) {
+    console.error('Server startup error:', err);
+    // process.exit(1); // ❌ Mat karo - server already chal raha hai
+  }
+}
 
 startServer();
