@@ -5,6 +5,10 @@ const cors = require('cors');
 const path = require('path');
 const Event = require('./models/Event');
 
+// ===== AUTH & PAYMENT ROUTES =====
+const authRoutes = require('./routes/auth');
+const paymentRoutes = require('./routes/payments');
+
 const app = express();
 const PORT = process.env.PORT || 5000;
 
@@ -1187,6 +1191,10 @@ async function autoSeedEvents() {
 }
 
 // ==================== API ROUTES ====================
+
+// Mount auth & payment routes FIRST
+app.use('/api/auth', authRoutes);
+app.use('/api/payments', paymentRoutes);
 
 // Health check for Railway
 app.get('/health', (req, res) => {
