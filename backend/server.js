@@ -13,7 +13,6 @@ app.use(express.json());
 
 // ==================== AUTO-SEED DATA ====================
 const seedEvents = [
-  // ==================== AUGUST 2026 ====================
   {
     title: "RM Sotheby's Monterey",
     description: "Monterey Car Week auction featuring Ferrari and classic cars",
@@ -120,8 +119,6 @@ const seedEvents = [
     isActive: true,
     isFeatured: true
   },
-
-  // ==================== SEPTEMBER 2026 ====================
   {
     title: "Cannes Yachting Festival",
     description: "Europe's leading in-water boat show",
@@ -214,8 +211,6 @@ const seedEvents = [
     isActive: true,
     isFeatured: false
   },
-
-  // ==================== OCTOBER 2026 ====================
   {
     title: "F1 Singapore Grand Prix",
     description: "Formula 1 night race in Singapore",
@@ -310,8 +305,6 @@ const seedEvents = [
     isActive: true,
     isFeatured: true
   },
-
-  // ==================== NOVEMBER 2026 ====================
   {
     title: "Phillips Geneva Watch Auction XVIII",
     description: "Important watches auction in Geneva",
@@ -388,8 +381,6 @@ const seedEvents = [
     isActive: true,
     isFeatured: false
   },
-
-  // ==================== DECEMBER 2026 ====================
   {
     title: "Art Basel Miami Beach",
     description: "Premier international art fair in Miami",
@@ -452,8 +443,6 @@ const seedEvents = [
     isActive: true,
     isFeatured: false
   },
-
-  // ==================== JANUARY 2027 ====================
   {
     title: "Australian Open",
     description: "Australian Open Grand Slam tennis tournament",
@@ -518,8 +507,6 @@ const seedEvents = [
     isActive: true,
     isFeatured: true
   },
-
-  // ==================== FEBRUARY 2027 ====================
   {
     title: "New York Fashion Week FW27",
     description: "Fall/Winter 2027 New York Fashion Week",
@@ -567,8 +554,6 @@ const seedEvents = [
     isActive: true,
     isFeatured: true
   },
-
-  // ==================== MARCH 2027 ====================
   {
     title: "Dubai International Boat Show",
     description: "Middle East's leading maritime event",
@@ -663,8 +648,6 @@ const seedEvents = [
     isActive: true,
     isFeatured: false
   },
-
-  // ==================== APRIL 2027 ====================
   {
     title: "The Masters Tournament",
     description: "Golf's most prestigious major championship",
@@ -728,8 +711,6 @@ const seedEvents = [
     isActive: true,
     isFeatured: false
   },
-
-  // ==================== MAY 2027 ====================
   {
     title: "Met Gala 2027",
     description: "Costume Institute Gala at The Met",
@@ -822,8 +803,6 @@ const seedEvents = [
     isActive: true,
     isFeatured: true
   },
-
-  // ==================== JUNE 2027 ====================
   {
     title: "Royal Ascot",
     description: "Britain's most valuable race meeting",
@@ -903,8 +882,6 @@ const seedEvents = [
     isActive: true,
     isFeatured: true
   },
-
-  // ==================== JULY 2027 ====================
   {
     title: "The Open Championship",
     description: "The oldest golf major championship",
@@ -952,8 +929,6 @@ const seedEvents = [
     isActive: true,
     isFeatured: false
   },
-
-  // ==================== AUGUST 2027 ====================
   {
     title: "Pebble Beach Concours 2027",
     description: "Premier classic car show and competition",
@@ -1001,8 +976,6 @@ const seedEvents = [
     isActive: true,
     isFeatured: true
   },
-
-  // ==================== SEPTEMBER 2027 ====================
   {
     title: "Venice Film Festival",
     description: "Mostra Internazionale d'Arte Cinematografica with VIP access",
@@ -1049,8 +1022,6 @@ const seedEvents = [
     isActive: true,
     isFeatured: true
   },
-
-  // ==================== OCTOBER 2027 ====================
   {
     title: "Frieze London 2027",
     description: "International contemporary art fair in Regent's Park",
@@ -1098,8 +1069,6 @@ const seedEvents = [
     isActive: true,
     isFeatured: true
   },
-
-  // ==================== NOVEMBER 2027 ====================
   {
     title: "Abu Dhabi GP 2027",
     description: "Formula 1 season finale at Yas Marina",
@@ -1146,8 +1115,6 @@ const seedEvents = [
     isActive: true,
     isFeatured: true
   },
-
-  // ==================== DECEMBER 2027 ====================
   {
     title: "Art Basel Miami Beach 2027",
     description: "Premier international art fair in Miami",
