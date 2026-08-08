@@ -5,6 +5,8 @@
 let currentView = 'feed';
 let currentCategory = 'all';
 let currentUser = null;
+let autoLogoutTimer = null;
+const AUTO_LOGOUT_MS = 25 * 60 * 1000; // 25 minutes
 
 // ===== HARDCODED 45 EVENTS =====
 const EVENTS = [
@@ -170,7 +172,7 @@ const EVENTS = [
   },
   {
     id: '17',
-    title: 'Concours d\'Elegance Pebble Beach',
+    title: "Concours d'Elegance Pebble Beach",
     date: 'Aug 16, 2026',
     location: 'Pebble Beach',
     price: '$750+',
@@ -250,7 +252,7 @@ const EVENTS = [
   },
   {
     id: '25',
-    title: 'Christie\'s Hong Kong Autumn Auctions',
+    title: "Christie's Hong Kong Autumn Auctions",
     date: 'Oct 24, 2026',
     location: 'Hong Kong',
     price: 'Est. $15M+',
@@ -280,7 +282,7 @@ const EVENTS = [
   },
   {
     id: '28',
-    title: 'Sotheby\'s Contemporary Evening NY',
+    title: "Sotheby's Contemporary Evening NY",
     date: 'Nov 18, 2026',
     location: 'New York',
     price: 'Est. $20M+',
@@ -320,7 +322,7 @@ const EVENTS = [
   },
   {
     id: '32',
-    title: 'Christie\'s Magnificent Jewels',
+    title: "Christie's Magnificent Jewels",
     date: 'Dec 8, 2026',
     location: 'New York',
     price: 'Est. $8M+',
@@ -330,7 +332,7 @@ const EVENTS = [
   },
   {
     id: '33',
-    title: 'Nobu Miami New Year\'s Eve',
+    title: "Nobu Miami New Year's Eve",
     date: 'Dec 31, 2026',
     location: 'Miami',
     price: '$2,500+',
@@ -485,33 +487,31 @@ function resetButton(btn) {
   btn.disabled = false;
 }
 
-// ===== WEB STORAGE =====
-const webStorage = {
-  async get(keys) {
-    const result = {};
-    keys.forEach(key => {
-      try {
-        const val = localStorage.getItem(key);
-        result[key] = val ? JSON.parse(val) : null;
-      } catch (e) {
-        result[key] = null;
-      }
-    });
-    return result;
-  },
-  async set(items) {
-    Object.entries(items).forEach(([key, val]) => {
-      localStorage.setItem(key, JSON.stringify(val));
-    });
-  },
-  async remove(keys) {
-    keys.forEach(key => localStorage.removeItem(key));
-  }
-};
+// ===== AUTO LOGOUT =====
+function startAutoLogoutTimer() {
+  clearTimeout(autoLogoutTimer);
+  autoLogoutTimer = setTimeout(() => {
+    showToast('Session expired. Logging out...');
+    setTimeout(() => handleLogout(true), 2000);
+  }, AUTO_LOGOUT_MS);
+}
+
+function resetAutoLogoutTimer() {
+  startAutoLogoutTimer();
+}
+
+function setupActivityListeners() {
+  const events = ['click', 'keypress', 'scroll', 'touchstart', 'mousemove'];
+  events.forEach(evt => {
+    document.addEventListener(evt, resetAutoLogoutTimer, { passive: true });
+  });
+}
 
 // ===== INIT =====
 document.addEventListener('DOMContentLoaded', () => {
   setupEventListeners();
+  setupActivityListeners();
+  startAutoLogoutTimer();
   renderFeed();
   updateTierBadge();
 });
@@ -538,7 +538,7 @@ function setupEventListeners() {
   });
 
   // Logout button
-  document.getElementById('btn-logout')?.addEventListener('click', handleLogout);
+  document.getElementById('btn-logout')?.addEventListener('click', () => handleLogout(false));
 }
 
 // ===== VIEW SWITCHING =====
@@ -554,6 +554,21 @@ function switchView(view) {
     case 'settings': renderSettings(); break;
     default: renderFeed();
   }
+}
+
+// ===== AUTH SCREEN =====
+function showAuthScreen() {
+  const authScreen = document.getElementById('auth-screen');
+  const mainApp = document.getElementById('main-app');
+  if (authScreen) authScreen.style.display = 'block';
+  if (mainApp) mainApp.style.display = 'none';
+}
+
+function showMainApp() {
+  const authScreen = document.getElementById('auth-screen');
+  const mainApp = document.getElementById('main-app');
+  if (authScreen) authScreen.style.display = 'none';
+  if (mainApp) mainApp.style.display = 'flex';
 }
 
 // ===== RENDER FEED =====
@@ -954,7 +969,7 @@ function renderSettings() {
   `;
 
   document.getElementById('btn-settings-upgrade')?.addEventListener('click', renderSubscribe);
-  document.getElementById('btn-settings-logout')?.addEventListener('click', handleLogout);
+  document.getElementById('btn-settings-logout')?.addEventListener('click', () => handleLogout(false));
 }
 
 // ===== EVENT DETAIL =====
@@ -1040,14 +1055,21 @@ function setReminder(eventId) {
 }
 
 // ===== LOGOUT =====
-function handleLogout() {
+function handleLogout(isAuto = false) {
+  clearTimeout(autoLogoutTimer);
   localStorage.removeItem('user');
   localStorage.removeItem('token');
   localStorage.removeItem('tier');
   currentUser = null;
-  showToast('Logged out successfully');
+
+  if (isAuto) {
+    showToast('Session expired. Please log in again.');
+  } else {
+    showToast('Logged out successfully');
+  }
+
   updateTierBadge();
-  renderFeed();
+  showAuthScreen();
 }
 
 // ===== TIER BADGE =====
